@@ -1,11 +1,9 @@
 package org.ccci.maintenance;
 
+import static com.atlassian.hamcrest.DeepIsEqual.deeplyEqualTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
-import static com.atlassian.hamcrest.DeepIsEqual.deeplyEqualTo;
 
 import java.sql.Connection;
 import java.sql.SQLException;
