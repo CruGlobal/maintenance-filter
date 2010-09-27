@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=%2$s">
+
+<style type="text/css">
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	font-weight: normal;
+	text-decoration: none;
+	color: #000000;
+}
+
+table { font-size: 10pt }
+
+a { text-decoration: none;	color: #3333BB; }
+a:visited {	text-decoration: none; color: #8822FF; }
+a:hover {	text-decoration: underline;	color: #000000; }
+
+table.error
+{
+  border: 3px solid #A52142;
+}
+
+th.error {
+  font-size: 100%;
+  background-color: #A52142;
+  border: 3px solid #A52142;
+  margin: 2px;
+  padding: 2px;
+  color: #FFFFFF;
+}
+
+td.error
+{
+  background-color: #FFFFFF;
+}
+
+.error {
+   background-color: #FFEEEE;
+   color: #AA0000;
+   font-weight: bold;
+   border: #AA0000 1px solid;
+   margin: 4px;
+   padding: 4px;
+}
+</style>
+
+<title>Site Unavailable due to Maintenance</title>
+</head>
+<body>
+
+<div align="center">
+<table class="error" width="600" border="0" cellpadding="0" cellspacing="0">
+  <tbody>
+    <tr>
+      <th class="error">This Site is Unavailable due to Maintenance</th>
+    </tr>
+    <tr class="error">
+      <td class="error">
+        <!-- begin outage message -->
+        %1$s
+        <!-- end outage message -->
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</body>
+</html>

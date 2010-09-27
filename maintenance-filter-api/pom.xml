@@ -1,0 +1,34 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>maintenance-filter</artifactId>
+    <groupId>org.ccci</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.ccci</groupId>
+  <artifactId>maintenance-filter-api</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  
+  <dependencies>
+  
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <!-- version specified by parent -->
+    </dependency>
+    
+    <!-- 
+      Used for annotations only; for now, we don't peform the actual validation.  So if javax.validation isn't on the server, that's ok. 
+      Therefore marked as 'provided'
+    -->
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>1.0.0.GA</version>
+      <scope>provided</scope>
+    </dependency>
+    
+  </dependencies>
+  
+  
+</project>
