@@ -5,11 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Map;
 
 import org.ccci.maintenance.util.Exceptions;
 import org.ccci.maintenance.util.ProgramFailureException;
-import org.ho.yaml.Yaml;
 import org.ho.yaml.YamlConfig;
 import org.ho.yaml.exception.YamlException;
 import org.joda.time.DateTime;
