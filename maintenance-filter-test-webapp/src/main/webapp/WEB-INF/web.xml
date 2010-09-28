@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+  
+  <display-name>maintenance-filter-test-webapp</display-name>
+  
+  <session-config>
+    <session-timeout>30</session-timeout>
+  </session-config>
+  
+  <welcome-file-list>
+      <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  
+  <context-param>
+    <param-name>org.ccci.maintenance.window.db.path</param-name>
+    <param-value>testapp</param-value>
+    <!-- results in database file at target/testapp.h2.db -->
+  </context-param>
+  
+  <servlet>
+    <servlet-name>MaintenanceControlServlet</servlet-name>
+    <servlet-class>org.ccci.maintenance.MaintenanceControlServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>MaintenanceControlServlet</servlet-name>
+    <url-pattern>/maintenanceControl/*</url-pattern>
+  </servlet-mapping>
+
+  <filter>
+    <filter-name>MaintenanceFilter</filter-name>
+    <filter-class>org.ccci.maintenance.MaintenanceServletFilter</filter-class>
+    <init-param>
+      <param-name>bypassUrlPatterns</param-name>
+      <param-value>
+        /maintenanceControl/.* ,
+        /ignored/.*
+      </param-value>
+    </init-param>    
+  </filter>
+  <filter-mapping>
+    <filter-name>MaintenanceFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+</web-app>
