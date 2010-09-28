@@ -28,13 +28,14 @@ public class MaintenancePageRenderer
      * 2. the character set with which this html page will be encoded.
      * 
      * See http://download.oracle.com/javase/6/docs/api/java/util/Formatter.html for more details
-     * on the syntax of format strings
+     * on the syntax of format strings.
+     * Note in particular '%' symbols must be escaped as '%%'
      */
     String pageName = "MaintenancePage.html";
 
     public void renderMaintenancePage(HttpServletResponse response, MaintenanceWindow window)
     {
-        InputStream templateStream = getClass().getClassLoader().getResourceAsStream("/" + pageName);
+        InputStream templateStream = getClass().getClassLoader().getResourceAsStream(pageName);
         if (templateStream == null)
         {
             throw new IllegalStateException(pageName + " does not appear to be on the classpath.  Is the build correct?");

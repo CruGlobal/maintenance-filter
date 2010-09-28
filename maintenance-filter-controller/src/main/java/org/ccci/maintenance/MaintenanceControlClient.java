@@ -132,11 +132,11 @@ public class MaintenanceControlClient
     {
         HttpPost httpPost = new HttpPost(server + "/" + WindowControlApi.CREATE_OR_UPDATE_PATH);
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-        parameters.add(new BasicNameValuePair("id", window.getId()));
-        parameters.add(new BasicNameValuePair("shortMessage", window.getShortMessage()));
-        parameters.add(new BasicNameValuePair("longMessage", window.getLongMessage()));
-        parameters.add(new BasicNameValuePair("beginAt", formatter.print(window.getBeginAt())));
-        parameters.add(new BasicNameValuePair("endAt", formatter.print(window.getEndAt())));
+        parameters.add(new BasicNameValuePair(WindowControlApi.ID_PARAMETER, window.getId()));
+        parameters.add(new BasicNameValuePair(WindowControlApi.SHORT_MESSAGE_PARAMETER, window.getShortMessage()));
+        parameters.add(new BasicNameValuePair(WindowControlApi.LONG_MESSAGE_PARAMETER, window.getLongMessage()));
+        parameters.add(new BasicNameValuePair(WindowControlApi.BEGIN_AT_PARAMETER, formatter.print(window.getBeginAt())));
+        parameters.add(new BasicNameValuePair(WindowControlApi.END_AT_PARAMETER, formatter.print(window.getEndAt())));
         
         parameters.add(new BasicNameValuePair(WindowControlApi.BYPASS_REQUEST_PARAMETER, "true"));
         

@@ -21,6 +21,16 @@ public class WindowControlApi
         return ISODateTimeFormat.dateTime();
     }
     public static final String WINDOW_SUCCESSFULLY_UPDATED_RESPONSE = "window successfully updated";
+
+    public static final String ID_PARAMETER = "id";
+
+    public static final String END_AT_PARAMETER = "endAt";
+
+    public static final String BEGIN_AT_PARAMETER = "beginAt";
+
+    public static final String LONG_MESSAGE_PARAMETER = "longMessage";
+
+    public static final String SHORT_MESSAGE_PARAMETER = "shortMessage";
     
 
 }

@@ -56,7 +56,7 @@ public class MaintenanceControlServlet extends HttpServlet
     private void handleUpdate(HttpServletRequest request, HttpServletResponse response) throws IOException
     {
         MaintenanceWindow window = constructWindowFromRequest(request);
-        
+        log.info("updating window " + window);
         try
         {
             maintenanceService.createOrUpdateMaintenanceWindow(window);
@@ -81,11 +81,11 @@ public class MaintenanceControlServlet extends HttpServlet
 
     private MaintenanceWindow constructWindowFromRequest(HttpServletRequest request)
     {
-        String windowId = getRequiredParameter(request, "windowId");
-        String shortMessage = getRequiredParameter(request, "shortMessage");
-        String longMessage = getRequiredParameter(request, "longMessage");
-        DateTime beginAt = parseIfPresent(request.getParameter("beginAt"), "beginAt");
-        DateTime endAt = parseIfPresent(request.getParameter("endAt"), "endAt");
+        String windowId = getRequiredParameter(request, WindowControlApi.ID_PARAMETER);
+        String shortMessage = getRequiredParameter(request, WindowControlApi.SHORT_MESSAGE_PARAMETER);
+        String longMessage = getRequiredParameter(request, WindowControlApi.LONG_MESSAGE_PARAMETER);
+        DateTime beginAt = parseIfPresent(request.getParameter("beginAt"), WindowControlApi.BEGIN_AT_PARAMETER);
+        DateTime endAt = parseIfPresent(request.getParameter("endAt"), WindowControlApi.END_AT_PARAMETER);
         
         MaintenanceWindow window = new MaintenanceWindow();
         window.setId(windowId);

@@ -50,14 +50,22 @@ public class Bootstrap
 
     private DataSource createDataSource()
     {
-        String datasourceLocation = servletContext.getInitParameter("org.ccci.maintenance.window.datasource");
+        String datasourceParamName = "org.ccci.maintenance.window.datasource";
+        String dbPathParamName = "org.ccci.maintenance.window.db.path";
+        String datasourceLocation = servletContext.getInitParameter(datasourceParamName);
         if (datasourceLocation != null)
         {
             return lookupDataSource(datasourceLocation);
         }
         else
         {
-            String dbPath = servletContext.getInitParameter("org.ccci.maintenance.window.db.path");
+            String dbPath = servletContext.getInitParameter(dbPathParamName);
+            if (dbPath == null)
+                throw new IllegalArgumentException(String.format(
+                    "you must provide either %s or %s",
+                    datasourceParamName,
+                    dbPathParamName
+                ));
             return createH2DatasourceLocatedAt(dbPath);
         }
     }

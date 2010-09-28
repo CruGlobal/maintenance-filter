@@ -32,35 +32,42 @@ public class MaintenanceServletFilter implements Filter
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException
     {
-        boolean bypassFilter = shouldBypass(request);
         MaintenanceWindow window = maintenanceService.getCurrentWindow();
-        if (window == null || bypassFilter)
+        if (window == null)
         {
-            if (window != null)
+            chain.doFilter(request, response);
+        }
+        else if(shouldBypass(request))
+        {
+            if (isBypassRequestParameterPresent(request))
             {
-                setSessionBypassIfSessionExists(request);
+                setSessionBypass(request);
             }
             chain.doFilter(request, response);
         }
         else
         {
-            if (isHtmlRequest(request))
-            {
-                renderer.renderMaintenancePage((HttpServletResponse) response, window);
-            }
-            else if (isOtherHttpRequest(request))
-            {
-                renderer.sendHttpUnavailable((HttpServletResponse) response, window);
-            }
-            else
-            /* I'm not sure we deal with non-http requests.  But in this case I guess we can just send a straight text message.
-             */
-            {
-                renderer.sendSimpleTextMaintenanceMessage(response, window);
-            }
-            return;
+            renderAppropriateMaintenancePage(request, response, window);
         }
-        
+    }
+
+    private void renderAppropriateMaintenancePage(ServletRequest request, ServletResponse response,
+                                                  MaintenanceWindow window)
+    {
+        if (isHtmlRequest(request))
+        {
+            renderer.renderMaintenancePage((HttpServletResponse) response, window);
+        }
+        else if (isOtherHttpRequest(request))
+        {
+            renderer.sendHttpUnavailable((HttpServletResponse) response, window);
+        }
+        else
+        /* I'm not sure we deal with non-http requests.  But in this case I guess we can just send a straight text message.
+         */
+        {
+            renderer.sendSimpleTextMaintenanceMessage(response, window);
+        }
     }
 
     private boolean isHtmlRequest(ServletRequest request)
@@ -84,9 +91,8 @@ public class MaintenanceServletFilter implements Filter
 
     private boolean shouldBypass(ServletRequest request)
     {
-        String bypassMaintenanceFilter = request.getParameter(WindowControlApi.BYPASS_REQUEST_PARAMETER);
-        if (bypassMaintenanceFilter != null && bypassMaintenanceFilter.equals("true"))
-            return true;
+        if (isBypassRequestParameterPresent(request))
+            return true;;
         
         if (request instanceof HttpServletRequest)
         {
@@ -106,17 +112,25 @@ public class MaintenanceServletFilter implements Filter
         return false;
     }
 
+    private boolean isBypassRequestParameterPresent(ServletRequest request)
+    {
+        String bypassMaintenanceFilter = request.getParameter(WindowControlApi.BYPASS_REQUEST_PARAMETER);
+        if (bypassMaintenanceFilter != null && bypassMaintenanceFilter.equals("true"))
+            return true;
+        return false;
+    }
+
     private String getSessionLocation()
     {
         return getClass().getName() + ".bypassMaintenanceFilter";
     }
     
-    private void setSessionBypassIfSessionExists(ServletRequest request)
+    private void setSessionBypass(ServletRequest request)
     {
         if (request instanceof HttpServletRequest)
         {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpSession session = httpRequest.getSession(false);
+            HttpSession session = httpRequest.getSession();
             if (session != null)
             {
                 session.setAttribute(getSessionLocation(), true);
