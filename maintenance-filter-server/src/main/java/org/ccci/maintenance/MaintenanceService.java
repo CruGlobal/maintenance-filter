@@ -8,7 +8,7 @@ public interface MaintenanceService
      * and whose end time is after now.
      * If there is no active window, this returns null.
      */
-    public MaintenanceWindow getCurrentWindow();
+    public MaintenanceWindow getActiveMaintenanceWindow();
     
     /**
      * Creates a new maintenance window, or, if a window exists with the same id as the given window, updates its data

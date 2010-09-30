@@ -27,7 +27,7 @@ public class MaintenanceServiceImpl implements MaintenanceService
         this.dataSource = dataSource;
     }
 
-    public MaintenanceWindow getCurrentWindow()
+    public MaintenanceWindow getActiveMaintenanceWindow()
     {
         Connection connnection;
         try

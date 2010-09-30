@@ -56,7 +56,7 @@ public class MaintenanceServletFilter implements Filter
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException
     {
-        MaintenanceWindow window = maintenanceService.getCurrentWindow();
+        MaintenanceWindow window = maintenanceService.getActiveMaintenanceWindow();
         if (window == null)
         {
             chain.doFilter(request, response);

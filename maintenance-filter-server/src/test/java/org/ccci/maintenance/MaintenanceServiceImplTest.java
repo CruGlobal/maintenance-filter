@@ -73,7 +73,7 @@ public class MaintenanceServiceImplTest
         
         when(clock.currentDateTime()).thenReturn(new DateTime(2010, 9, 23, 2, 56, 24, 985));
         
-        MaintenanceWindow retrievedWindow = service.getCurrentWindow();
+        MaintenanceWindow retrievedWindow = service.getActiveMaintenanceWindow();
         
         assertThat(retrievedWindow, is(deeplyEqualTo(window)));
     }
@@ -102,7 +102,7 @@ public class MaintenanceServiceImplTest
         
         when(clock.currentDateTime()).thenReturn(new DateTime(2010, 9, 23, 2, 56, 24, 985));
         
-        MaintenanceWindow retrievedWindow = service.getCurrentWindow();
+        MaintenanceWindow retrievedWindow = service.getActiveMaintenanceWindow();
         
         assertThat(retrievedWindow, is(deeplyEqualTo(updatedWindow)));
     }
