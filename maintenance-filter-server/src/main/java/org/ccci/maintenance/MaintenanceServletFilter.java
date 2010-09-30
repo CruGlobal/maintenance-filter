@@ -24,9 +24,33 @@ public class MaintenanceServletFilter implements Filter
     private ServletRequestMatcher ignoredRequestsMatcher;
     
     private MaintenanceService maintenanceService;
+
+    private Bootstrap bootstrap;
+
+    public void init(FilterConfig filterConfig) throws ServletException
+    {
+        ServletContext servletContext = filterConfig.getServletContext();
+        bootstrap = new Bootstrap(servletContext);
+        bootstrap.init();
+        maintenanceService = bootstrap.getMaintenanceService();
+        ignoredRequestsMatcher = buildIgnoredRequestsMatcher(filterConfig);
+    }
+
+    private ServletRequestMatcher buildIgnoredRequestsMatcher(FilterConfig filterConfig)
+    {
+        String ignorePaths = filterConfig.getInitParameter("bypassUrlPatterns");
+        ServletRequestMatcher.Builder builder = ServletRequestMatcher.builder();
+        if (ignorePaths != null)
+        {
+            String[] paths = ignorePaths.split("\\s*,\\s*");
+            builder.matchUrlPatterns(Arrays.asList(paths));
+        }
+        return builder.build();
+    }
     
     public void destroy()
     {
+        bootstrap.shutdown();
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
@@ -138,24 +162,5 @@ public class MaintenanceServletFilter implements Filter
         }
     }
 
-    public void init(FilterConfig filterConfig) throws ServletException
-    {
-        ServletContext servletContext = filterConfig.getServletContext();
-        Bootstrap bootstrap = Bootstrap.getInstance(servletContext);
-        maintenanceService = bootstrap.getMaintenanceService();
-        ignoredRequestsMatcher = buildIgnoredRequestsMatcher(filterConfig);
-    }
-
-    private ServletRequestMatcher buildIgnoredRequestsMatcher(FilterConfig filterConfig)
-    {
-        String ignorePaths = filterConfig.getInitParameter("bypassUrlPatterns");
-        ServletRequestMatcher.Builder builder = ServletRequestMatcher.builder();
-        if (ignorePaths != null)
-        {
-            String[] paths = ignorePaths.split("\\s*,\\s*");
-            builder.matchUrlPatterns(Arrays.asList(paths));
-        }
-        return builder.build();
-    }
 
 }

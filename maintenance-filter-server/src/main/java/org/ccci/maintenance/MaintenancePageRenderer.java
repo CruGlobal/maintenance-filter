@@ -2,14 +2,16 @@ package org.ccci.maintenance;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.ccci.maintenance.util.Exceptions;
+
+import com.google.common.io.CharStreams;
 
 public class MaintenancePageRenderer
 {
@@ -62,7 +64,7 @@ public class MaintenancePageRenderer
         String template;
         try
         {
-            template = IOUtils.toString(templateStream, CHARSET);
+            template = CharStreams.toString(new InputStreamReader(templateStream, CHARSET));
         }
         catch (IOException e)
         {

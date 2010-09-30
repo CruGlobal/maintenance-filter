@@ -47,9 +47,9 @@
     </dependency>
     
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>1.4</version>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>r07</version>
     </dependency>
     
     <!-- test libs -->

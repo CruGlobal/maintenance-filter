@@ -1,5 +1,7 @@
 package org.ccci.maintenance;
 
+import java.sql.SQLException;
+
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
@@ -8,19 +10,20 @@ import javax.sql.DataSource;
 
 import org.ccci.maintenance.util.Clock;
 import org.ccci.maintenance.util.Exceptions;
-import org.h2.jdbcx.JdbcDataSource;
+import org.h2.jdbcx.JdbcConnectionPool;
 
 public class Bootstrap
 {
 
     private final ServletContext servletContext;
+    private JdbcConnectionPool pool;
 
     public Bootstrap(ServletContext servletContext)
     {
         this.servletContext = servletContext;
     }
 
-    public static synchronized Bootstrap getInstance(ServletContext servletContext)
+    public static Bootstrap getInstance(ServletContext servletContext)
     {
         String location = Bootstrap.class.getName();
         Bootstrap bootstrap = (Bootstrap) servletContext.getAttribute(location);
@@ -28,19 +31,43 @@ public class Bootstrap
         {
             return bootstrap;
         }
-        bootstrap = new Bootstrap(servletContext);
-        bootstrap.init();
-        servletContext.setAttribute(location, bootstrap);
-        return bootstrap;
+        else
+        {
+            throw new IllegalStateException("Boostrap has not yet been created");
+        }
     }
 
-    private void init()
+    public void init()
     {
         DataSource dataSource = createDataSource();
         initDatabaseIfNecessary(dataSource);
         MaintenanceServiceImpl maintenanceService = new MaintenanceServiceImpl(Clock.system(), dataSource);
-        String location = MaintenanceService.class.getName();
-        servletContext.setAttribute(location, maintenanceService);
+        String maintenanceServiceLocation = MaintenanceService.class.getName();
+        servletContext.setAttribute(maintenanceServiceLocation, maintenanceService);
+        
+        String bootstrapLocation = Bootstrap.class.getName();
+        servletContext.setAttribute(bootstrapLocation, this);
+    }
+    
+    public void shutdown()
+    {
+        shutdownPoolIfNecessary();
+    }
+
+    private void shutdownPoolIfNecessary()
+    {
+        if (pool != null)
+        {
+            try
+            {
+                pool.dispose();
+                pool = null;
+            }
+            catch (SQLException e)
+            {
+                throw Exceptions.wrap(e);
+            }
+        }
     }
 
     private void initDatabaseIfNecessary(DataSource dataSource)
@@ -66,16 +93,14 @@ public class Bootstrap
                     datasourceParamName,
                     dbPathParamName
                 ));
-            return createH2DatasourceLocatedAt(dbPath);
+            initH2DatasourcePoolLocatedAt(dbPath);
+            return pool;
         }
     }
 
-    private DataSource createH2DatasourceLocatedAt(String dbPath)
+    private void initH2DatasourcePoolLocatedAt(String dbPath)
     {
-        JdbcDataSource ds = new JdbcDataSource();
-        ds.setURL("jdbc:h2:file:" + dbPath);
-        ds.setUser("sa");
-        return ds;
+        pool = JdbcConnectionPool.create("jdbc:h2:file:" + dbPath, "sa", "");
     }
 
     private DataSource lookupDataSource(String datasourceLocation)
