@@ -33,7 +33,6 @@
     <init-param>
       <param-name>bypassUrlPatterns</param-name>
       <param-value>
-        /maintenanceControl/.* ,
         /ignored/.*
       </param-value>
     </init-param>    
