@@ -1,0 +1,23 @@
+--- 
+# a yaml list of urls, each pointing to the maintenance control servlet for that app
+serverControlUrls: 
+  - "http://localhost:8180/ss/maintenanceControl"
+  - "http://localhost:8080/MpdStats/maintenanceControl"
+  - "http://hart-a012.net.ccci.org:8180/ss/maintenanceControl"
+  - "http://hart-a012.net.ccci.org:8880/MpdStats/maintenanceControl"
+  - "http://hart-a012.net.ccci.org:8880/eTimesheet/maintenanceControl"
+   
+window: 
+  id: test-outage
+  beginAt: "2010-09-30T00:00:00.000-04:00"
+  endAt: "2010-09-30T11:25:00.000-04:00"
+  shortMessage: |
+    This system is unavailable due to an ongoing upgrade.  Please visit http://staffweb.ccci.org/news/systems-upgrade.aspx
+    for more information.
+  longMessage: |
+    Our systems are currently being upgraded. Just as you have to upgrade the programs on your home computer every now and then, 
+    we have to periodically do the same thing and upgrade the programs in our ministry wide systems. The difference is, where at 
+    home you can load an upgrade in 5-10 minutes, upgrading our ministry wide system can take us up to 4 days to do. We apologize 
+    for any inconvenience this is for you. The system should be back online by 8:00 AM Tuesday October 12th. If you'd like more 
+    information about the upgrade please go to 
+    <a href="http://staffweb.ccci.org/news/systems-upgrade.aspx">http://staffweb.ccci.org/news/systems-upgrade.aspx</a>.
