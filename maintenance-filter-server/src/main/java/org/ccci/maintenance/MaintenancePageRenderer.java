@@ -2,16 +2,15 @@ package org.ccci.maintenance;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.ccci.maintenance.util.Exceptions;
 
-import com.google.common.io.CharStreams;
 
 public class MaintenancePageRenderer
 {
@@ -64,7 +63,7 @@ public class MaintenancePageRenderer
         String template;
         try
         {
-            template = CharStreams.toString(new InputStreamReader(templateStream, CHARSET));
+            template = IOUtils.toString(templateStream, CHARSET);
         }
         catch (IOException e)
         {
@@ -89,6 +88,7 @@ public class MaintenancePageRenderer
     {
         response.setContentType("text/html");
         response.setCharacterEncoding(CHARSET);
+        response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
 
         PrintWriter writer;
         try
@@ -122,19 +122,6 @@ public class MaintenancePageRenderer
             log.error("Unknown error occurred while sending message to client via PrintWriter.");
         }
         writer.close();
-    }
-
-    public void sendHttpUnavailable(HttpServletResponse response, MaintenanceWindow window)
-    {
-        try
-        {
-            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, window.getShortMessage());
-        }
-        catch (IOException sendErrorException)
-        //Hmmm.  What now?
-        {
-            throw Exceptions.wrap(sendErrorException);
-        }
     }
 
     public void sendSimpleTextMaintenanceMessage(ServletResponse response, MaintenanceWindow window)

@@ -78,37 +78,18 @@ public class MaintenanceServletFilter implements Filter
     private void renderAppropriateMaintenancePage(ServletRequest request, ServletResponse response,
                                                   MaintenanceWindow window)
     {
-        if (isHtmlRequest(request))
+        if (isHttpRequest(request))
         {
             renderer.renderMaintenancePage((HttpServletResponse) response, window);
         }
-        else if (isOtherHttpRequest(request))
-        {
-            renderer.sendHttpUnavailable((HttpServletResponse) response, window);
-        }
         else
-        /* I'm not sure we deal with non-http requests.  But in this case I guess we can just send a straight text message.
-         */
+        /* I'm not sure we deal with non-http requests.  But in this case I guess we can just send a straight text message. */
         {
             renderer.sendSimpleTextMaintenanceMessage(response, window);
         }
     }
 
-    private boolean isHtmlRequest(ServletRequest request)
-    {
-        if (!(request instanceof HttpServletRequest))
-            return false;
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        
-        //this is pretty rough, but I think it'll work ok
-        String acceptHeader = httpRequest.getHeader("Accept");
-        if (acceptHeader != null && acceptHeader.contains("html"))
-            return true;
-        else
-            return false;
-    }
-
-    private boolean isOtherHttpRequest(ServletRequest request)
+    private boolean isHttpRequest(ServletRequest request)
     {
         return request instanceof HttpServletRequest;
     }
