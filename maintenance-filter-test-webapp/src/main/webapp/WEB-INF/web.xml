@@ -13,7 +13,7 @@
   
   <context-param>
     <param-name>org.ccci.maintenance.window.db.path</param-name>
-    <param-value>testapp</param-value>
+    <param-value>target/testapp</param-value>
     <!-- results in database file at target/testapp.h2.db -->
   </context-param>
   
