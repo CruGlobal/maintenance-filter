@@ -100,7 +100,13 @@ public class Bootstrap
 
     private void initH2DatasourcePoolLocatedAt(String dbPath)
     {
-        pool = JdbcConnectionPool.create("jdbc:h2:file:" + dbPath, "sa", "");
+        /*
+         * use a file-based database, since this must persist across jvm restarts.
+         * avoid file-based locking, because ungraceful process terminations cause
+         * the lock file to hang around, which prevents the app from starting.
+         */
+        String url = "jdbc:h2:file:" + dbPath + ";FILE_LOCK=SOCKET";
+        pool = JdbcConnectionPool.create(url, "sa", "");
     }
 
     private DataSource lookupDataSource(String datasourceLocation)
