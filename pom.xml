@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <artifactId>ccci-root</artifactId>
+    <groupId>org.ccci</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  
   <groupId>org.ccci</groupId>
   <artifactId>maintenance-filter</artifactId>
   <packaging>pom</packaging>
   <name>Maintenance Filter</name>
   <version>1.0-SNAPSHOT</version>
+  
+  
   <description>Provides a utility to easily block access to a web application during a maintenance outtage.  Users will see a configured message.</description>
   <modules>
   	<module>maintenance-filter-server</module>
@@ -13,22 +22,6 @@
   	<module>maintenance-filter-api</module>
     <module>maintenance-filter-test-webapp</module>
   </modules>
-  
-  
-  <distributionManagement>
-    <repository>
-      <id>artifacts.ccci.org-releases</id>
-      <name>artifacts.ccci.org-releases</name>
-      <url>http://arkham.ccci.org:80/artifactory/libs-releases-local</url>
-    </repository>
-  
-    <snapshotRepository>
-      <id>artifacts.ccci.org-snapshots</id>
-      <name>artifacts.ccci.org-snapshots</name>
-      <url>http://arkham.ccci.org:80/artifactory/libs-snapshots-local</url>
-    </snapshotRepository>
-  </distributionManagement>
-  
   
   <dependencyManagement>
     <dependencies>
