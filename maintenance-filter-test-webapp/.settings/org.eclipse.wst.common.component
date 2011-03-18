@@ -3,6 +3,7 @@
     <wb-module deploy-name="maintenance-filter-test-webapp">
         <wb-resource deploy-path="/" source-path="/src/main/webapp"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
         <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/maintenance-filter-server/maintenance-filter-server">
             <dependency-type>uses</dependency-type>
         </dependent-module>
