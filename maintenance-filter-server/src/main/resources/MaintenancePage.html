@@ -1,72 +1,678 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=%2$s"/>
+<meta http-equiv="Content-Type" content="text/html; charset=${charset}"/>
 
 <style type="text/css">
-body {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 10pt;
-	font-weight: normal;
-	text-decoration: none;
-	color: #000000;
-}
-
-table { font-size: 10pt }
-
-a { text-decoration: none; color: #132C55 }
-a:visited {	text-decoration: none; color: #132C55 }
-a:hover {	text-decoration: underline; color:#807243 }
-
-table.error
-{
-  border: 3px solid #AA0000;
-}
-
-th.error {
-  font-size: 100%%;
-  background-color: #AA0000;
-  border: 3px solid #AA0000;
-  margin: 2px;
-  padding: 2px;
-  color: #FFFFFF;
-}
-
-td.error
-{
-  background-color: #FFFFFF;
-}
+/* note: this is copy/pasted without modification from ssw's staffservices.css */
 
 .error {
-   background-color: #FFEEEE;
-   color: #000000;
-   font-weight: bold;
-   border: #AA0000 1px solid;
-   margin: 4px;
-   padding: 4px;
+	color: red;
+	background-color: yellow;
+	font-weight: bold;
+}
+
+body {
+	font-family: freight-sans-pro,"Helvetica Neue", Arial, Helvetica, Geneva, sans-serif; 
+	font-size: 16px; 
+	text-align: left; 
+	color: #353535; 
+	letter-spacing: .4px; 
+	font-variant: lining-nums tabular-nums; 
+	font-weight: 400;
+}
+
+.clear {
+	clear: both;
+}
+
+.ss-iframe {
+	display: block;
+	width: 700px;
+}
+
+.ss-iframe table {
+	padding: 0;
+	margin: .5em 0 0 0;
+	text-align: left;
+	width: 700px; /* padding to ensure no overflows */
+}
+
+.ss-iframe p {
+	line-height: 1.3em;
+}
+
+.tableCellWidth200 {
+	width: 200px;
+}
+
+.tableCellWidth250 {
+	width: 250px;
+}
+
+.tableCellWidth300 {
+ 	width: 300px;
+}
+
+.tableCellWidth400 {
+ 	width: 400px;
+}
+
+ul {
+	margin: 0.5em 0 0 0;
+	padding: 0 0 0 3em;
+}
+
+li {
+	list-style: disc;
+	line-height: 1.4em;
+	padding: 0;
+}
+
+h1 { 
+	font-size: 45px; 
+	color: #666062; 
+	margin: 10px 0; 
+	letter-spacing: .5px; 
+	font-weight: 300;
+}
+
+h2 { 
+	font-size: 27px; 
+	font-weight: 600; 
+	color: #353535; 
+	margin: 6px 0; 
+}
+
+form h2 {
+	font-weight: bold;
+	font-size: 20px;
+	text-align: left;
+	color: #007398;
+}
+
+p {
+	font-size: 17px;
+	line-height: 1.2em;
+	margin: 5px 0 0 0;
+}
+
+.font-28 {
+	font-size: 28px;
+}
+
+.font-14 {
+	font-size: 14px;
+}
+
+.font-12 {
+	font-size: 12px;
+}
+
+.font-10 {
+	font-size: 10px;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.underline {
+	text-decoration: underline;
+}
+
+.crusade-red {
+	color: #de7c00;
+}
+
+.crusade-blue {
+	color: #007398;
+}
+
+.crusade-gold {
+	color: #f9b625;
+}
+
+.crusade-silver {
+	color: #666062;
+}
+
+.white {
+	color: #FFF;
+}
+
+.light-grey {
+	color: #999;
+}
+
+.dark-grey {
+	color: #444;
+}
+
+.black {
+	color: #000;
+}
+
+.bg_crusade-blue {
+	background-color: #007398;
+}
+
+.tab-5 {
+	padding-left: 5px !important;
+}
+
+.tab-10 {
+	padding-left: 10px !important;
+}
+
+.tab-15 {
+	padding-left: 15px !important;
+}
+
+.tab-20 {
+	padding-left: 15px !important;
+}
+
+.tab-25 {
+	padding-left: 15px !important;
+}
+
+.tab-30 {
+	padding-left: 15px !important;
+}
+
+.display-block {
+	display: block;
+}
+
+.display-inline {
+	display: inline;
+}
+
+.inline-block {
+	display: inline-block;
+}
+
+.float-left {
+	float: left;
+}
+
+.float-right {
+	float: right;
+}
+
+.block {
+	display: block;
+} /*replace this with display-block*/
+
+p a {
+	color: #de7c00;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+a {
+	color: #de7c00;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+a:hover, a:active {
+	color: #f9b625;	
+	text-decoration: underline;
+}
+
+a:visited {
+	color: #de7c00;
+	text-decoration: none;
+}
+
+a img {
+	border:none;
+}
+
+table tr td {
+	vertical-align: top; 
+	text-align: left;
+	font-size: 15px;
+	padding: 5px 10px 5px 10px;
+}
+
+.margin-top-zero {
+	margin-top: 0 !important;
+}
+
+.margin-top-five {
+	margin-top: 5px !important;
+}
+
+.margin-top-ten {
+	margin-top: 10px !important;
+}
+
+.margin-top-fifteen {
+	margin-top: 15px !important;
+}
+
+.margin-top-twenty {
+	margin-top: 20px !important;
+}
+
+.margin-top-thirty {
+	margin-top: 30px !important;
+}
+
+.margin-bottom-zero {
+	margin-bottom: 0 !important;
+}
+
+.margin-bottom-five {
+	margin-bottom: 5px !important;
+}
+
+.margin-bottom-ten {
+	margin-bottom: 10px !important;
+}
+
+.margin-bottom-fifteen {
+	margin-bottom: 15px !important;
+}
+
+.margin-bottom-twenty {
+	margin-bottom: 20px !important;
+}
+
+.margin-left-five {
+	margin-left: 5px;
+} /*replace later with tabs*/
+
+.width-50 {
+	width: 50px;
+}
+
+.width-100 {
+	width: 100px;
+}
+
+.width-150 {
+	width: 150px;
+}
+
+.width-200 {
+	width: 200px;
+}
+
+.width-250 {
+	width: 250px;
+}
+
+.width-300 {
+    width: 300px;
+}
+
+.width-350 {
+    width: 350px;
+}
+
+.width-400 {
+    width: 400px;
+}
+
+.width-500 {
+    width: 500px;
+}
+
+.width-700 {
+    width: 700px;
+}
+
+th {
+	font-weight: bold;
+	font-size: 16px;
+	vertical-align: top;
+	padding-left: 10px;
+}
+
+tr.wtCell {
+	background-color: #FFF; 
+	margin: 0;
+}
+
+tr.ltCell {
+    background-color: #E5E5E5; 
+    margin: 0;
+}
+
+.brownCell {
+	background-color: #E7E7E7; 
+	margin: 0;
+}
+
+p input {
+	margin: 0 10px 0 0;
+}
+
+p.label-input {
+	padding: 20px 0 0 0;
+	margin: 0;
+	background-color: none;
+}
+
+p.label-input label {
+	float: left;
+	width: 200px;
+	text-align: right;
+	padding: 0 10px 0 0;
+}
+
+p.label-input input, p.label-input select {
+	float: left;
+}
+
+p.label-input span {
+	display: inline;
+	float: left;
+	padding-right: 10px;
+}
+
+.MainMHA form, form.MHA_6 {
+	float: left;
+	padding-right: 10px;
+}
+
+/** Rich Sept 23 **/
+form h2 {
+	margin: 30px 0 0 0;
+}
+
+table.padded-table td {
+	padding: 5px 10px;
+}
+/**********************/
+
+/** Jayson Sept 23 **/
+
+/* ===== Emergency Contacts Overview (EmgOverview.html) ====== */
+.EmgOverview div.primary {
+    background-color: #989B98;
+}
+
+.EmgOverview div.secondary {
+    background-color: #E8E1D4;
+}
+
+.EmgOverview .width-350 {
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.EmgOverview .width-350 h2 {
+    color: #007398;
+}
+
+.EmgOverview .margin-left-five {
+	margin-left: 5px;
+}
+
+.EmgOverview .width-350 p {
+	margin-left:5px;
+}
+
+
+/* ===== Remove Contact (EmgConfirmDelete.html) ===== */
+
+.EmgConfirmDelete div, .EmgConfirmDelete h1, .EmgConfirmDelete input {
+    margin-left: auto;
+    margin-right: auto;
+    text-align:center;
+    margin: 12px;
+}
+
+.EmgConfirmDelete h1 {
+    margin-top: 36px;
+}
+
+/* ===== Add/Edit Emg Contact Info ===== */
+
+.EmgAddEdit label.radio {
+    width:auto;
+}
+/**********************/
+
+.inline-container {
+	display: block;
+}
+
+.inline-container form {
+	float: left;
+	padding-right: 10px;
+}
+
+.inline-container form input {
+	display: inline;
+}
+
+table.embedSteps {
+	height: 64px;
+}
+
+
+/*====Jayson=====*/
+p.label-input .radio {
+		/* Keeps radio button labels from being too wide. */
+	width:auto;
+	font-weight: normal;
+}
+
+.block-center {
+	margin-left:auto;
+	margin-right: auto;
+}
+
+.EmgConfirmDelete div, .EmgConfirmDelete h1, .EmgConfirmDelete input {
+	margin-left: auto;
+	margin-right: auto;
+	text-align:center;
+	margin: 12px;
+}
+
+.EmgConfirmDelete h1 {
+	margin-top: 36px;
+}
+
+/****************/
+
+/*Rich Coy's CSS Updates*/
+form h2 {
+	margin: 30px 0 0 0;
+}
+/***********************/
+
+.mileagelog-tab {
+	background: #EFEFEF;
+	background-image: -moz-linear-gradient(100% 100% 90deg, #EFEFEF, #ffffff);
+   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EFEFEF), to(#ffffff));
+   border-top: 1px solid #EFEFEF;
+   border-left: 1px solid #EFEFEF;
+   border-right: 1px solid #EFEFEF;
+ 
+}
+ 
+.mileagelog-not-tab {
+                background: #fff;
+}
+/************/
+
+/* ----- Jayson ----- */
+/* ===== Personal Info Update Summary ===== */
+
+.piu_summary h2 {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.text-align-right {
+	text-align: right;
+}
+
+.piu_summary .width-700 p:nth-child(2n+1) {
+	background-color:#f7f7f7;
+}
+
+.piu_summary .width-700 p {
+	margin: 0;
+	padding: 7px 0 8px;
+}
+
+/* ===== Salary Calculator (/SalaryCalc2002Servlet/) ===== */
+
+.salaryCalc label {
+	font-weight: bold;
+}
+
+.salaryCalc label span {
+	font-weight: normal;
+}
+
+.salaryCalc p, .salaryCalc h2 {
+	margin-bottom: 20px;
+}
+
+.salaryCalc p.label-input {
+	padding-bottom: 0;
+}
+
+/* ----- embedDetail.html ----- */
+	
+.tableNumber {
+	width: 30px;
+	text-align: right;
+	display: block;
+	float: left;
+}
+
+	.tableLabel {
+	width: 300px;
+	display: block;
+	float: left;
+	margin-left: 1em;
+	font-weight: bold;
+}
+	
+	.embedDetail .embedDetailTable .tableLabel {
+		width: 270px;
+	}
+	
+	.tableLabel .tableSubLabel {
+		font-size: 14px;
+		font-weight: normal;
+		line-height: 11px;
+	}
+
+.tableInfo {
+	width: 200px;
+	display: inline-block;
+	text-align: left;
+	float: left;
+}
+
+/* ----- embedSteps.html ----- */
+	
+.embedSteps {
+	font-size: 12px;
+	display: block;
+	clear: both;
+	margin: 0 auto;
+	padding: 0;	
+	height: 3.5em;
+	width: 64.8em;
+}
+	
+.embedSteps span.dkCell, .embedSteps span.ltCell {
+	display: block;
+	float: left;
+	width: 8.1em;
+}
+
+.embedSteps span.dkCell {
+	background-color: #4B4B4B;
+	color: #f7f7f7;
+}
+
+.embedSteps span.ltCell {
+background-color: #f7f7f7;
+color: #4B4B4B;
+}
+
+.embedSteps .step {
+	font-size: 3em;
+	display: block;
+	float: left;
+}
+
+.embedSteps .name {
+	font-size: .9em;
+	line-height: 1em;
+	display: block;
+	float: left;
+	padding: .2em .2em .2em .2em;
+}
+/* end of Jayson's */
+
+
+/*
+ * SimpleModal Basic Modal Dialog
+ * http://www.ericmmartin.com/projects/simplemodal/
+ * http://code.google.com/p/simplemodal/
+ *
+ * Copyright (c) 2010 Eric Martin - http://ericmmartin.com
+ *
+ * Licensed under the MIT license:
+ *   http://www.opensource.org/licenses/mit-license.php
+ *
+ * Revision: $Id: basic.css 257 2010-07-27 23:06:56Z emartin24 $
+ */
+
+#basic-modal-content {display:none;}
+
+/* Overlay */
+#simplemodal-overlay {background-color:#000; cursor:pointer;}
+
+/* Container */
+#simplemodal-container {height:360px; width:600px; color:#bbb; background-color:#fff; border:4px solid #007398; padding:12px;}
+#simplemodal-container .simplemodal-data {padding:8px;}
+#simplemodal-container a {color:#ddd;}
+#simplemodal-container a.modalCloseImg {background:url(img/modal_close.png) no-repeat; width:25px; height:29px; display:inline; z-index:3200; position:absolute; top:-15px; right:-16px; cursor:pointer;}
+#simplemodal-container h3 {color:#de7c00;}
+
+/* oe_dep - Open Enrollment CSS */
+body.oe_dep table td.tableCellWidth200{
+	width: 200px;
+}
+
+
+/* Print Button for Staff Services */
+#ss_print_link {
+	width: 100%; text-align: right;
+}
+#ss_print_link a {
+	padding: 10px 20px 10px 40px; color: #FFF; text-decoration: none; text-transform: uppercase; font-size: 12px; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; font-weight: bold; letter-spacing: 1px; background: #de7c00 url(/ss/images/ss_print.png) no-repeat 15px center; display: inline-block; 
+}
+
+#ss_print_link a {
+	background-color: #f9b625; 
 }
 </style>
 
-<title>Site Unavailable</title>
+<title>Unavailable</title>
 </head>
 <body>
 
-<div align="center">
-<table class="error" width="600" border="0" cellpadding="0" cellspacing="0">
-  <tbody>
-    <tr>
-      <th class="error">This Site is Currently Unavailable due to Maintenance</th>
-    </tr>
-    <tr class="error">
-      <td class="error">
-        <!-- begin outage message -->
-        %1$s
-        <!-- end outage message -->
-      </td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
+  <h1>This Content is Currently Unavailable due to Maintenance...</h1>
+  <div class="outage-message">
+    <!-- begin outage message -->
+    ${outageMessage}
+    <!-- end outage message -->
+  </div>
 </body>
 </html>

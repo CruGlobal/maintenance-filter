@@ -124,10 +124,9 @@ public class MaintenanceControlServlet extends HttpServlet
     @Override
     public void init(ServletConfig config) throws ServletException
     {
-        
-        
+        String name = config.getInitParameter("name");
         Bootstrap bootstrap = Bootstrap.getInstance(config.getServletContext());
-        maintenanceService = bootstrap.getMaintenanceService();
+        maintenanceService = bootstrap.getMaintenanceService(name);
     }
     
     

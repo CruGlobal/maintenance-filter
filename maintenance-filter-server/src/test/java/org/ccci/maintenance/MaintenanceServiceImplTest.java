@@ -3,6 +3,7 @@ package org.ccci.maintenance;
 import static com.atlassian.hamcrest.DeepIsEqual.deeplyEqualTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
@@ -23,7 +24,8 @@ import org.testng.annotations.Test;
 public class MaintenanceServiceImplTest
 {
 
-    MaintenanceServiceImpl service;
+    MaintenanceServiceImpl defaultService;
+    MaintenanceServiceImpl specialService;
     
     DataSource dataSource;
 
@@ -46,7 +48,8 @@ public class MaintenanceServiceImplTest
     @BeforeMethod
     public void setupService() throws SQLException
     {
-        service = new MaintenanceServiceImpl(clock, dataSource);
+        defaultService = new MaintenanceServiceImpl(clock, dataSource, null);
+        specialService = new MaintenanceServiceImpl(clock, dataSource, "special");
         clearTable();
     }
     
@@ -69,13 +72,35 @@ public class MaintenanceServiceImplTest
         window.setBeginAt(new DateTime(2010, 9, 23, 2, 29, 50, 234));
         window.setEndAt(new DateTime(2010, 9, 23, 3, 35, 50, 0));
         
-        service.createOrUpdateMaintenanceWindow(window);
+        defaultService.createOrUpdateMaintenanceWindow(window);
         
         when(clock.currentDateTime()).thenReturn(new DateTime(2010, 9, 23, 2, 56, 24, 985));
         
-        MaintenanceWindow retrievedWindow = service.getActiveMaintenanceWindow();
+        MaintenanceWindow retrievedWindow = defaultService.getActiveMaintenanceWindow();
         
         assertThat(retrievedWindow, is(deeplyEqualTo(window)));
+        assertThat(specialService.getActiveMaintenanceWindow(), is(nullValue()));
+    }
+    
+    @Test
+    public void testCreateForNonDefaultFilter()
+    {
+        MaintenanceWindow window = new MaintenanceWindow();
+        window.setId("test-outage");
+        window.setShortMessage("This site will be unavailable for a short while");
+        window.setLongMessage("This site will be unavailable for the next hour or so.  " +
+        "Please visit <a href='http://www.youtube.com'>somewhere else</a> while you wait.");
+        window.setBeginAt(new DateTime(2010, 9, 23, 2, 29, 50, 234));
+        window.setEndAt(new DateTime(2010, 9, 23, 3, 35, 50, 0));
+        
+        specialService.createOrUpdateMaintenanceWindow(window);
+        
+        when(clock.currentDateTime()).thenReturn(new DateTime(2010, 9, 23, 2, 56, 24, 985));
+        
+        MaintenanceWindow retrievedWindow = specialService.getActiveMaintenanceWindow();
+        
+        assertThat(retrievedWindow, is(deeplyEqualTo(window)));
+        assertThat(defaultService.getActiveMaintenanceWindow(), is(nullValue()));
     }
 
     @Test
@@ -89,7 +114,7 @@ public class MaintenanceServiceImplTest
         window.setBeginAt(new DateTime(2010, 9, 23, 2, 29, 50, 234));
         window.setEndAt(new DateTime(2010, 9, 23, 3, 35, 50, 0));
         
-        service.createOrUpdateMaintenanceWindow(window);
+        defaultService.createOrUpdateMaintenanceWindow(window);
         
         MaintenanceWindow updatedWindow = new MaintenanceWindow();
         updatedWindow.setId(window.getId());
@@ -98,11 +123,11 @@ public class MaintenanceServiceImplTest
         updatedWindow.setBeginAt(window.getBeginAt());
         updatedWindow.setEndAt(window.getEndAt().plusHours(3));
         
-        service.createOrUpdateMaintenanceWindow(updatedWindow);
+        defaultService.createOrUpdateMaintenanceWindow(updatedWindow);
         
         when(clock.currentDateTime()).thenReturn(new DateTime(2010, 9, 23, 2, 56, 24, 985));
         
-        MaintenanceWindow retrievedWindow = service.getActiveMaintenanceWindow();
+        MaintenanceWindow retrievedWindow = defaultService.getActiveMaintenanceWindow();
         
         assertThat(retrievedWindow, is(deeplyEqualTo(updatedWindow)));
     }

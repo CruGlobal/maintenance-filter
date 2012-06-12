@@ -37,18 +37,23 @@ public class Bootstrap
         }
     }
 
-    public void init()
+    public void init(String filterName)
     {
-        DataSource dataSource = createDataSource();
-        initDatabaseIfNecessary(dataSource);
-        MaintenanceServiceImpl maintenanceService = new MaintenanceServiceImpl(Clock.system(), dataSource);
-        String maintenanceServiceLocation = MaintenanceService.class.getName();
-        servletContext.setAttribute(maintenanceServiceLocation, maintenanceService);
-        
         String bootstrapLocation = Bootstrap.class.getName();
-        servletContext.setAttribute(bootstrapLocation, this);
+        Bootstrap bootstrap = (Bootstrap) servletContext.getAttribute(bootstrapLocation);
+        if (bootstrap == null)
+        {
+            DataSource dataSource = createDataSource();
+            initDatabaseIfNecessary(dataSource);
+            servletContext.setAttribute(bootstrapLocation, this);
+            bootstrap = this;
+        }
+        MaintenanceServiceImpl maintenanceService = new MaintenanceServiceImpl(Clock.system(), bootstrap.pool, filterName);
+        servletContext.setAttribute(getMaintenanceServiceLocation(filterName), maintenanceService);
+        
     }
     
+    /** may be called multiple times, if multiple filters are configured */
     public void shutdown()
     {
         shutdownPoolIfNecessary();
@@ -137,10 +142,28 @@ public class Bootstrap
         }
     }
 
+    /** gets the default maintenance service */
     public MaintenanceService getMaintenanceService()
     {
-        String location = MaintenanceService.class.getName();
-        return (MaintenanceService) servletContext.getAttribute(location);
+        return getMaintenanceService(null);
+    }
+    
+    /** 
+     * gets the maintenance service with the given name.
+     * If {@code name} is null, the default maintenance service is returned. 
+     */
+    public MaintenanceService getMaintenanceService(String name)
+    {
+        String location = getMaintenanceServiceLocation(name);
+        MaintenanceService maintenanceService = (MaintenanceService) servletContext.getAttribute(location);
+        if (maintenanceService == null) throw new IllegalStateException("can't find maintenance service in servlet context at " + location);
+        return maintenanceService;
+    }
+
+    private String getMaintenanceServiceLocation(String filterName)
+    {
+        String suffix = filterName == null ? "" : ("-" + filterName);
+        return MaintenanceService.class.getName() + suffix;
     }
     
 }

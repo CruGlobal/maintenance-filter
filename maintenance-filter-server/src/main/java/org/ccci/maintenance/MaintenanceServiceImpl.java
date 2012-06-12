@@ -20,11 +20,13 @@ public class MaintenanceServiceImpl implements MaintenanceService
     
     private final Clock clock;
     private final DataSource dataSource;
+    private final String filterName;
     
-    public MaintenanceServiceImpl(Clock clock, DataSource dataSource)
+    public MaintenanceServiceImpl(Clock clock, DataSource dataSource, String filterName)
     {
         this.clock = clock;
         this.dataSource = dataSource;
+        this.filterName = filterName;
     }
 
     public MaintenanceWindow getActiveMaintenanceWindow()
@@ -52,7 +54,7 @@ public class MaintenanceServiceImpl implements MaintenanceService
     {
         String sql = "select * from MaintenanceWindow where " +
         		"(beginAt < ? or beginAt is null) and " +
-        		"(endAt > ? or endAt is null) ";
+        		"(endAt > ? or endAt is null) " + buildFilterNameClause();
         PreparedStatement statement = connnection.prepareStatement(sql);
         try
         {
@@ -64,6 +66,14 @@ public class MaintenanceServiceImpl implements MaintenanceService
         }
     }
 
+    private String buildFilterNameClause()
+    {
+        if (filterName == null)
+            return " and (filterName is null)";
+        else
+            return " and (filterName = ?)"; 
+    }
+
     private MaintenanceWindow getCurrentWindowWithStatement(PreparedStatement statement) throws SQLException
     {
         DateTime currentDateTime = clock.currentDateTime();
@@ -71,6 +81,10 @@ public class MaintenanceServiceImpl implements MaintenanceService
         ResultSet resultSet;
         statement.setTimestamp(1, timestamp);
         statement.setTimestamp(2, timestamp);
+        if (filterName != null)
+        {
+            statement.setString(3, filterName);
+        }
         resultSet = statement.executeQuery();
         try
         {
@@ -181,9 +195,10 @@ public class MaintenanceServiceImpl implements MaintenanceService
                 "longMessage, " +
                 "beginAt, " +
                 "endAt, " +
-                "id" +
+                "id, " +
+                "filterName" +
                 ") values (" +
-                "?, ?, ?, ?, ?" +
+                "?, ?, ?, ?, ?, ?" +
                 ")";
         PreparedStatement statement = connnection.prepareStatement(sql);
         try
@@ -203,6 +218,7 @@ public class MaintenanceServiceImpl implements MaintenanceService
         statement.setTimestamp(3, TimeUtil.dateTimeToSqlTimestamp(window.getBeginAt()));
         statement.setTimestamp(4, TimeUtil.dateTimeToSqlTimestamp(window.getEndAt()));
         statement.setString(5, window.getId());
+        statement.setString(6, filterName);
         int rowsUpdated = statement.executeUpdate();
         if (rowsUpdated != 1)
             throw new IllegalStateException("Exactly one row was not inserted, as expected; row count: " + rowsUpdated + ", id: " + window.getId());

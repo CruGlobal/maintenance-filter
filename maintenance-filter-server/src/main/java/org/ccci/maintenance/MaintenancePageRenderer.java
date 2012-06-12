@@ -18,7 +18,7 @@ public class MaintenancePageRenderer
      * The character set with which we render the maintenance page.  We currently always use UTF-8, instead of using the character set
      * requested by the client.
      */
-    private static final String CHARSET = "UTF-8";
+    static final String CHARSET = "UTF-8";
 
     private final Logger log = Logger.getLogger(MaintenancePageRenderer.class);
     
@@ -77,11 +77,9 @@ public class MaintenancePageRenderer
     /** see {@link #pageName} for parameter meanings */
     private String formatHtml(MaintenanceWindow window, String template)
     {
-        String html = String.format(
-            template, 
-            window.getLongMessage(),
-            CHARSET);
-        return html;
+        return template
+            .replace("${charset}", CHARSET)
+            .replace("${outageMessage}", window.getLongMessage());
     }
     
     private void deliverHtml(HttpServletResponse response, String html)

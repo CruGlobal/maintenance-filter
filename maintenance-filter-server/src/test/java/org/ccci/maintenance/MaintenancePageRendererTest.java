@@ -49,7 +49,9 @@ public class MaintenancePageRendererTest
         
         renderer.renderMaintenancePage(response, window);
         
+        assertThat(stringWriter.toString(), containsString("charset=" + MaintenancePageRenderer.CHARSET));
         assertThat(stringWriter.toString(), containsString("<html>"));
+        assertThat(stringWriter.toString(), containsString("</html>"));
         assertThat(stringWriter.toString(), containsString(window.getLongMessage()));
     }
     

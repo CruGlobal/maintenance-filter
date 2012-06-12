@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.h2.jdbcx.JdbcDataSource;
+
 public class JdbcUtils
 {
 
@@ -42,6 +44,27 @@ public class JdbcUtils
         catch (SQLException e)
         {
             Exceptions.swallow(e, "exception while closing result set %s", resultSet);
+        }
+    }
+
+    public static void executeUpdate(JdbcDataSource dataSource, String sql) throws SQLException
+    {
+        Connection connection = dataSource.getConnection();
+        try
+        {
+            Statement statement = connection.createStatement();
+            try
+            {
+                statement.executeUpdate(sql);
+            }
+            finally
+            {
+                close(statement);
+            }
+        }
+        finally
+        {
+            close(connection);
         }
     }
 

@@ -26,13 +26,19 @@ public class MaintenanceServletFilter implements Filter
     private MaintenanceService maintenanceService;
 
     private Bootstrap bootstrap;
+    
+    /**
+     * if null, then this filter is the default maintenance filter.  Otherwise, this is the filter's name.
+     */
+    private String name;
 
     public void init(FilterConfig filterConfig) throws ServletException
     {
+        name = filterConfig.getInitParameter("name");
         ServletContext servletContext = filterConfig.getServletContext();
-        bootstrap = new Bootstrap(servletContext);
-        bootstrap.init();
-        maintenanceService = bootstrap.getMaintenanceService();
+        new Bootstrap(servletContext).init(name);
+        bootstrap = Bootstrap.getInstance(servletContext);
+        maintenanceService = bootstrap.getMaintenanceService(name);
         ignoredRequestsMatcher = buildIgnoredRequestsMatcher(filterConfig);
     }
 

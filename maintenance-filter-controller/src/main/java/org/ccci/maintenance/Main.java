@@ -13,6 +13,7 @@ public class Main
 {
 
     private MaintenanceControlClient client;
+    private String configurationFileName = "maintenanceWindowUpdate.yml";
     
     public static void main(String[] args)
     {
@@ -20,7 +21,7 @@ public class Main
         try
         {
             Main main = new Main();
-            main.boot();
+            main.boot(args);
             try
             {
                 main.run();
@@ -45,9 +46,24 @@ public class Main
         System.exit(exitCode);
     }
     
-    void boot()
+    void boot(String[] args)
     {
         client = new MaintenanceControlClient();
+        
+        //simple for now; may be later use jcommander
+        if (args.length > 0)
+        {
+            if (args.length != 2)
+                throw new ProgramFailureException("invalid arguments; only accepted argument is '--configurationFile configurationFileName'");
+            if (args[0].equals("--configurationFile"))
+            {
+                configurationFileName = args[1];
+            }
+            else
+            {
+                throw new ProgramFailureException("invalid arguments; only accepted argument is '--configurationFile configurationFileName'");
+            }
+        }
     }
     
     void shutdown()
@@ -58,7 +74,7 @@ public class Main
     private void run()
     {
         ConfigFileReader reader = new ConfigFileReader();
-        MaintenanceWindowUpdate windowUpdate = reader.readConfigFile("maintenanceWindowUpdate.yml");
+        MaintenanceWindowUpdate windowUpdate = reader.readConfigFile(configurationFileName);
         List<URI> servers = buildServerControlUris(windowUpdate);
         Map<URI, Failure> failures = client.createOrUpdateWindow(servers, windowUpdate.getWindow());
         handleOutcome(servers, failures);
