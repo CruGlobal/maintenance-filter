@@ -1,6 +1,9 @@
 package org.ccci.maintenance;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
@@ -84,6 +87,9 @@ public class Bootstrap
     {
         String datasourceParamName = "org.ccci.maintenance.window.datasource";
         String dbPathParamName = "org.ccci.maintenance.window.db.path";
+        String configFileNameParamName = "org.ccci.maintenance.window.db.path.configfile.name";
+        String configFilePropertyKeyParamName = "org.ccci.maintenance.window.db.path.configfile.propertykey";
+        
         String datasourceLocation = servletContext.getInitParameter(datasourceParamName);
         if (datasourceLocation != null)
         {
@@ -93,13 +99,86 @@ public class Bootstrap
         {
             String dbPath = servletContext.getInitParameter(dbPathParamName);
             if (dbPath == null)
-                throw new IllegalArgumentException(String.format(
-                    "you must provide either %s or %s",
-                    datasourceParamName,
-                    dbPathParamName
-                ));
+            {
+                String configFile = servletContext.getInitParameter(configFileNameParamName);
+                if (configFile == null)
+                {
+                    throw new IllegalArgumentException(String.format(
+                        "you must provide either %s, %s, or %s  as an init-param",
+                        datasourceParamName,
+                        dbPathParamName,
+                        configFileNameParamName
+                    ));
+                }
+                else
+                {
+                    String dbPathPropertyKey = servletContext.getInitParameter(configFilePropertyKeyParamName);
+                    if (dbPathPropertyKey == null)
+                        throw new IllegalArgumentException(String.format(
+                            "you must provide %s when you use %s",
+                            configFilePropertyKeyParamName,
+                            configFileNameParamName
+                        ));
+                    dbPath = getDatabasePathFromConfigFile(configFile, dbPathPropertyKey);
+                }
+            }
             initH2DatasourcePoolLocatedAt(dbPath);
             return pool;
+
+        }
+    }
+
+    private String getDatabasePathFromConfigFile(String configFile, String dbPathPropertyKey)
+    {
+        ClassLoader classLoader = getClass().getClassLoader();
+        InputStream configFileStream = classLoader.getResourceAsStream(configFile);
+        if (configFileStream == null)
+            throw new IllegalStateException(String.format(
+                "Cannot find config file resource '%s' from classloader %s", 
+                configFile,
+                classLoader));
+        Properties configProperties = loadConfigProperties(configFileStream);
+        
+        String dbPath = configProperties.getProperty(dbPathPropertyKey);
+        if (dbPath == null)
+            throw new IllegalStateException(String.format(
+                "config file '%s' doesn't define a property with key %s", 
+                configFile,
+                dbPathPropertyKey));
+            
+        return dbPath;
+    }
+
+    private Properties loadConfigProperties(InputStream configFileStream)
+    {
+        try
+        {
+            Properties config = new Properties();
+            try
+            {
+                config.load(configFileStream);
+            }
+            catch (IOException e)
+            {
+                throw Exceptions.wrap(e);
+            }
+            return config;
+        }
+        finally
+        {
+            closeStreamCarefully(configFileStream);
+        }
+    }
+
+    private void closeStreamCarefully(InputStream configFileStream)
+    {
+        try
+        {
+            configFileStream.close();
+        }
+        catch (IOException e)
+        {
+            Exceptions.swallow(e, "exception closing config stream");
         }
     }
 
