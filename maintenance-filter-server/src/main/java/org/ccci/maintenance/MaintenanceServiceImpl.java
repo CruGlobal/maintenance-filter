@@ -14,6 +14,9 @@ import org.ccci.maintenance.util.JdbcUtils;
 import org.ccci.maintenance.util.TimeUtil;
 import org.joda.time.DateTime;
 
+import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
+
 //TODO: make this jdbc code nice, create or use a helper framework.
 public class MaintenanceServiceImpl implements MaintenanceService
 {
@@ -154,8 +157,10 @@ public class MaintenanceServiceImpl implements MaintenanceService
     }
 
     /** returns true if the row existed and was updated, false otherwise */
-    private boolean updateMaintenanceWindowWithConnection(Connection connnection, MaintenanceWindow window) throws SQLException
+    private boolean updateMaintenanceWindowWithConnection(Connection connection, MaintenanceWindow window) throws SQLException
     {
+        checkIdNotInUseByAnotherFilter(connection, window.getId());
+        
         String sql = "update MaintenanceWindow " +
         		"set " +
         		"shortMessage = ?, " +
@@ -163,7 +168,7 @@ public class MaintenanceServiceImpl implements MaintenanceService
         		"beginAt = ?, " +
         		"endAt = ? " +
                 "where id = ?";
-        PreparedStatement statement = connnection.prepareStatement(sql);
+        PreparedStatement statement = connection.prepareStatement(sql);
         try
         {
             return updateMaintenanceWindowWithStatement(statement, window);
@@ -172,6 +177,53 @@ public class MaintenanceServiceImpl implements MaintenanceService
         {
             JdbcUtils.close(statement);
         }
+    }
+
+    private void checkIdNotInUseByAnotherFilter(Connection connection, String id) throws SQLException
+    {
+        String sql = "select filterName from MaintenanceWindow where id = ?";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        try
+        {
+            checkIdNotInUseByAnotherFilterWithStatement(statement, id);
+        }
+        finally
+        {
+            JdbcUtils.close(statement);
+        }
+    }
+
+    private void checkIdNotInUseByAnotherFilterWithStatement(PreparedStatement statement, String id) throws SQLException
+    {
+        statement.setString(1, id);
+        ResultSet resultSet = statement.executeQuery();
+        try
+        {
+            checkIdNotInUseByAnotherFilterWithResultSet(resultSet, id);
+        }
+        finally
+        {
+            JdbcUtils.close(resultSet);
+        }
+    }
+
+    private void checkIdNotInUseByAnotherFilterWithResultSet(ResultSet resultSet, String id) throws SQLException
+    {
+        if (resultSet.next())
+        {
+            String filterName = resultSet.getString("filterName");
+            Preconditions.checkArgument(Objects.equal(filterName, this.filterName), 
+                "the '%s' maintenance window is owned by %s, not by %s",
+                id,
+                getFilterDescription(filterName),
+                getFilterDescription(this.filterName));
+            Preconditions.checkState(!resultSet.next(), "More than one window exists for id " + id);
+        }
+    }
+
+    private String getFilterDescription(String filterName)
+    {
+        return filterName == null ? "the default filter" : "the " + filterName + " filter";
     }
 
     private boolean updateMaintenanceWindowWithStatement(PreparedStatement statement, MaintenanceWindow window) throws SQLException
