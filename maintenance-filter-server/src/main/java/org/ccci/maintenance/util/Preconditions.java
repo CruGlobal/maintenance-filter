@@ -20,7 +20,7 @@ public class Preconditions
      * is thrown with an exception message generated from calling {@link String#format(String, Object...)} on the
      * given {@code message} and {@code parameters}.
      * 
-     * @param string the string to check
+     * @param reference the string to check
      * @param message a format string
      * @param parameters parameter values for the format string
      * @return the given {@code reference} to make inline checks possible.
@@ -101,7 +101,7 @@ public class Preconditions
      * If the given string is too long, an {@link IllegalArgumentException} is thrown whose message is based on {@code referenceName}.
      * 
      * @param string the string to check
-     * @param maxLength 
+     * @param maxSize
      * @param referenceName should refer to the name of the parameter being checked
      * @return the given {@code string} to make inline checks possible
      */
@@ -128,9 +128,9 @@ public class Preconditions
      * </pre>
      * 
      * 
-     * @param string the string to check
-     * @param maxLength
-     * @param referenceName should refer to the name of the parameter being checked
+     * @param condition the condition to check
+     * @param message format string
+     * @param parameters format string args
      */
     public static void checkArgument(boolean condition, String message, Object... parameters)
     {
