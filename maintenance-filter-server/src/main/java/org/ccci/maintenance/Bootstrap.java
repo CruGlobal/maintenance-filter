@@ -51,11 +51,26 @@ public class Bootstrap
             servletContext.setAttribute(bootstrapLocation, this);
             bootstrap = this;
         }
-        MaintenanceServiceImpl maintenanceService = new MaintenanceServiceImpl(Clock.system(), bootstrap.pool, filterName);
+        String key = getKey();
+        MaintenanceServiceImpl maintenanceService = new MaintenanceServiceImpl(Clock.system(), bootstrap.pool, filterName, key);
         servletContext.setAttribute(getMaintenanceServiceLocation(filterName), maintenanceService);
         
     }
-    
+
+    private String getKey() {
+        String keyParamName = "org.ccci.maintenance.window.key";
+        String key = servletContext.getInitParameter(keyParamName);
+
+        if (key == null)
+        {
+            throw new IllegalArgumentException(String.format(
+                "you must provide provide an authentication key via servlet init parameter %s",
+                keyParamName
+            ));
+        }
+        return key;
+    }
+
     /** may be called multiple times, if multiple filters are configured */
     public void shutdown()
     {

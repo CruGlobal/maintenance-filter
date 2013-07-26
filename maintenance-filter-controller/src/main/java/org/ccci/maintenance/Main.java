@@ -76,10 +76,17 @@ public class Main
         ConfigFileReader reader = new ConfigFileReader();
         MaintenanceWindowUpdate windowUpdate = reader.readConfigFile(configurationFileName);
         List<URI> servers = buildServerControlUris(windowUpdate);
-        Map<URI, Failure> failures = client.createOrUpdateWindow(servers, windowUpdate.getWindow());
+        String key = getKey(windowUpdate);
+        Map<URI, Failure> failures = client.createOrUpdateWindow(servers, windowUpdate.getWindow(), key);
         handleOutcome(servers, failures);
     }
-    
+
+    private String getKey(MaintenanceWindowUpdate windowUpdate) {
+        String key = windowUpdate.getKey();
+        if (key == null)
+            throw new ProgramFailureException("configuration contains no key");
+        return key;
+    }
 
     private List<URI> buildServerControlUris(MaintenanceWindowUpdate windowUpdate)
     {

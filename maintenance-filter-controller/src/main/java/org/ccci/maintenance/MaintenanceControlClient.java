@@ -16,6 +16,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
@@ -41,12 +42,12 @@ public class MaintenanceControlClient
     private final HttpClient httpClient = new DefaultHttpClient();
     private DateTimeFormatter formatter = WindowControlApi.dateTimeFormatter();
     
-    public Map<URI, Failure> createOrUpdateWindow(List<URI> servers, MaintenanceWindow window)
+    public Map<URI, Failure> createOrUpdateWindow(List<URI> servers, MaintenanceWindow window, String key)
     {
         Map<URI, Failure> failures = new HashMap<URI, Failure>(); 
         for (URI server : servers)
         {
-            HttpPost httpPost = buildPost(server, window);
+            HttpPost httpPost = buildPost(server, window, key);
             HttpResponse response;
             try
             {
@@ -128,7 +129,7 @@ public class MaintenanceControlClient
             e));
     }
 
-    private HttpPost buildPost(URI server, MaintenanceWindow window)
+    private HttpPost buildPost(URI server, MaintenanceWindow window, String key)
     {
         HttpPost httpPost = new HttpPost(server + "/" + WindowControlApi.CREATE_OR_UPDATE_PATH);
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -139,7 +140,7 @@ public class MaintenanceControlClient
         parameters.add(new BasicNameValuePair(WindowControlApi.END_AT_PARAMETER, formatter.print(window.getEndAt())));
         
         parameters.add(new BasicNameValuePair(WindowControlApi.BYPASS_REQUEST_PARAMETER, "true"));
-        
+
         UrlEncodedFormEntity entity;
         try
         {
@@ -150,6 +151,8 @@ public class MaintenanceControlClient
             throw new AssertionError(WindowControlApi.REQUEST_CHARACTER_ENCODING + " should be present on any compliant JVM");
         }
         httpPost.setEntity(entity);
+
+        httpPost.setHeader(new BasicHeader("Authorization", "Key " + key));
         return httpPost;
     }
     

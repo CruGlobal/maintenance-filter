@@ -15,5 +15,9 @@ public interface MaintenanceService
      * with the given window's data.
      */
     public void createOrUpdateMaintenanceWindow(MaintenanceWindow window);
-    
+
+    /**
+     * Returns true if the given key matches the configured key
+     */
+    public boolean isAuthenticated(String key);
 }

@@ -11,11 +11,11 @@ import javax.sql.DataSource;
 import org.ccci.maintenance.util.Clock;
 import org.ccci.maintenance.util.Exceptions;
 import org.ccci.maintenance.util.JdbcUtils;
+import org.ccci.maintenance.util.Objects;
+import org.ccci.maintenance.util.Preconditions;
 import org.ccci.maintenance.util.TimeUtil;
 import org.joda.time.DateTime;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 
 //TODO: make this jdbc code nice, create or use a helper framework.
 public class MaintenanceServiceImpl implements MaintenanceService
@@ -24,12 +24,14 @@ public class MaintenanceServiceImpl implements MaintenanceService
     private final Clock clock;
     private final DataSource dataSource;
     private final String filterName;
-    
-    public MaintenanceServiceImpl(Clock clock, DataSource dataSource, String filterName)
+    private String key;
+
+    public MaintenanceServiceImpl(Clock clock, DataSource dataSource, String filterName, String key)
     {
         this.clock = clock;
         this.dataSource = dataSource;
         this.filterName = filterName;
+        this.key = key;
     }
 
     public MaintenanceWindow getActiveMaintenanceWindow()
@@ -212,7 +214,7 @@ public class MaintenanceServiceImpl implements MaintenanceService
         if (resultSet.next())
         {
             String filterName = resultSet.getString("filterName");
-            Preconditions.checkArgument(Objects.equal(filterName, this.filterName), 
+            Preconditions.checkArgument(Objects.equal(filterName, this.filterName),
                 "the '%s' maintenance window is owned by %s, not by %s",
                 id,
                 getFilterDescription(filterName),
@@ -275,5 +277,23 @@ public class MaintenanceServiceImpl implements MaintenanceService
         if (rowsUpdated != 1)
             throw new IllegalStateException("Exactly one row was not inserted, as expected; row count: " + rowsUpdated + ", id: " + window.getId());
     }
-    
+
+    public boolean isAuthenticated(String key) {
+        return isEqualInConstantTime(key, this.key);
+    }
+
+    // see http://codahale.com/a-lesson-in-timing-attacks/
+    private boolean isEqualInConstantTime(String a, String b) {
+        if (a.length() != b.length()) {
+            return false;
+        }
+
+        boolean result = true;
+        for (int i = 0; i < a.length(); i++) {
+            result = result && (a.charAt(i) == b.charAt(i));
+        }
+        return result;
+    }
+
+
 }

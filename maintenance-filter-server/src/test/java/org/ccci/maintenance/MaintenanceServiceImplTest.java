@@ -48,8 +48,8 @@ public class MaintenanceServiceImplTest
     @BeforeMethod
     public void setupService() throws SQLException
     {
-        defaultService = new MaintenanceServiceImpl(clock, dataSource, null);
-        specialService = new MaintenanceServiceImpl(clock, dataSource, "special");
+        defaultService = new MaintenanceServiceImpl(clock, dataSource, null, "secrets");
+        specialService = new MaintenanceServiceImpl(clock, dataSource, "special", "secrets");
         clearTable();
     }
     
@@ -131,5 +131,22 @@ public class MaintenanceServiceImplTest
         
         assertThat(retrievedWindow, is(deeplyEqualTo(updatedWindow)));
     }
-    
+
+    @Test
+    public void testInvalidAuthentication()
+    {
+        assertThat(defaultService.isAuthenticated("pleaseletmein"), is(false));
+    }
+
+    @Test
+    public void testInvalidAuthenticationWithClosePassword()
+    {
+        assertThat(defaultService.isAuthenticated("secretz"), is(false));
+    }
+
+    @Test
+    public void testValidAuthentication()
+    {
+        assertThat(defaultService.isAuthenticated("secrets"), is(true));
+    }
 }

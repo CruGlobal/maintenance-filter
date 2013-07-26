@@ -33,26 +33,39 @@ public class MaintenanceControlServlet extends HttpServlet
     {
         request.setCharacterEncoding(WindowControlApi.REQUEST_CHARACTER_ENCODING);
         response.setCharacterEncoding(WindowControlApi.REQUEST_CHARACTER_ENCODING);
-        
+
+        try
+        {
+            authenticate(request);
+            handle(request, response);
+        }
+        catch (BadRequestException e)
+        {
+            response.sendError(e.getResponseCode(), e.getMessage());
+        }
+    }
+
+    private void handle(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
         String pathInfo = request.getPathInfo();
         if (pathInfo != null && pathInfo.equals("/" + WindowControlApi.CREATE_OR_UPDATE_PATH))
         {
-            try
-            {
                 handleUpdate(request, response);
-            }
-            catch (BadRequestException e)
-            {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-            }
         }
         else
         {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "no such command");
         }
     }
-    
-    
+
+    private void authenticate(HttpServletRequest request) {
+        if (!maintenanceService.isAuthenticated(getKey(request)))
+        {
+            throw new BadRequestException(HttpServletResponse.SC_UNAUTHORIZED, "invalid authentication key");
+        }
+    }
+
+
     private void handleUpdate(HttpServletRequest request, HttpServletResponse response) throws IOException
     {
         MaintenanceWindow window = constructWindowFromRequest(request);
@@ -76,6 +89,15 @@ public class MaintenanceControlServlet extends HttpServlet
             .getWriter()
             .append(WindowControlApi.WINDOW_SUCCESSFULLY_UPDATED_RESPONSE)
             .flush();
+    }
+
+    private String getKey(HttpServletRequest request) {
+        String key = request.getHeader("Authorization");
+        if (key == null)
+            throw new BadRequestException(HttpServletResponse.SC_UNAUTHORIZED, "authentication required");
+        if (!key.startsWith("Key "))
+            throw new BadRequestException(HttpServletResponse.SC_UNAUTHORIZED, "unusable authentication scheme");
+        return key.substring("Key ".length());
     }
 
 
