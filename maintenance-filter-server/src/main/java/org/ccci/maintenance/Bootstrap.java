@@ -52,7 +52,7 @@ public class Bootstrap
             servletContext.setAttribute(bootstrapLocation, this);
 
             String key = getKey();
-            maintenanceService = new MaintenanceServiceImpl(Clock.system(), pool, key);
+            maintenanceService = new MaintenanceServiceImpl(Clock.system(), dataSource, key);
             servletContext.setAttribute(getMaintenanceServiceLocation(), maintenanceService);
         }
         else
@@ -60,7 +60,6 @@ public class Bootstrap
             maintenanceService = getMaintenanceServiceImpl();
         }
         maintenanceService.addFilterName(filterName);
-
     }
 
     private String getKey() {
