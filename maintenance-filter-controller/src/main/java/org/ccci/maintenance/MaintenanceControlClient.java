@@ -40,7 +40,7 @@ public class MaintenanceControlClient
     }
 
     private final HttpClient httpClient = new DefaultHttpClient();
-    private DateTimeFormatter formatter = WindowControlApi.dateTimeFormatter();
+    private final DateTimeFormatter formatter = WindowControlApi.dateTimeFormatter();
     
     public Map<URI, Failure> createOrUpdateWindow(List<URI> servers, MaintenanceWindow window, String key)
     {
