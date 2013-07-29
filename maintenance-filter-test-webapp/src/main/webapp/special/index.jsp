@@ -5,9 +5,9 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Ignored Page</title>
+        <title>Special Page</title>
     </head>
     <body>
-        <h1>This page should render, even if there is an active maintenance window.</h1>
+        <h1>This page should should be hidden if either the default or the 'special' filter have an active maintenance window.</h1>
     </body>
 </html>

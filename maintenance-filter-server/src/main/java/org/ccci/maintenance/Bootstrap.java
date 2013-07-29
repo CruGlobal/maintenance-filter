@@ -44,17 +44,23 @@ public class Bootstrap
     {
         String bootstrapLocation = Bootstrap.class.getName();
         Bootstrap bootstrap = (Bootstrap) servletContext.getAttribute(bootstrapLocation);
+        MaintenanceServiceImpl maintenanceService;
         if (bootstrap == null)
         {
             DataSource dataSource = createDataSource();
             initDatabaseIfNecessary(dataSource);
             servletContext.setAttribute(bootstrapLocation, this);
-            bootstrap = this;
+
+            String key = getKey();
+            maintenanceService = new MaintenanceServiceImpl(Clock.system(), pool, key);
+            servletContext.setAttribute(getMaintenanceServiceLocation(), maintenanceService);
         }
-        String key = getKey();
-        MaintenanceServiceImpl maintenanceService = new MaintenanceServiceImpl(Clock.system(), bootstrap.pool, filterName, key);
-        servletContext.setAttribute(getMaintenanceServiceLocation(filterName), maintenanceService);
-        
+        else
+        {
+            maintenanceService = getMaintenanceServiceImpl();
+        }
+        maintenanceService.addFilterName(filterName);
+
     }
 
     private String getKey() {
@@ -201,10 +207,8 @@ public class Bootstrap
     {
         /*
          * use a file-based database, since this must persist across jvm restarts.
-         * avoid file-based locking, because ungraceful process terminations cause
-         * the lock file to hang around, which prevents the app from starting.
          */
-        String url = "jdbc:h2:file:" + dbPath + ";FILE_LOCK=SOCKET";
+        String url = "jdbc:h2:file:" + dbPath;
         pool = JdbcConnectionPool.create(url, "sa", "");
     }
 
@@ -236,28 +240,24 @@ public class Bootstrap
         }
     }
 
-    /** gets the default maintenance service */
     public MaintenanceService getMaintenanceService()
     {
-        return getMaintenanceService(null);
-    }
-    
-    /** 
-     * gets the maintenance service with the given name.
-     * If {@code name} is null, the default maintenance service is returned. 
-     */
-    public MaintenanceService getMaintenanceService(String name)
-    {
-        String location = getMaintenanceServiceLocation(name);
-        MaintenanceService maintenanceService = (MaintenanceService) servletContext.getAttribute(location);
-        if (maintenanceService == null) throw new IllegalStateException("can't find maintenance service in servlet context at " + location);
-        return maintenanceService;
+        return getMaintenanceServiceImpl();
     }
 
-    private String getMaintenanceServiceLocation(String filterName)
-    {
-        String suffix = filterName == null ? "" : ("-" + filterName);
-        return MaintenanceService.class.getName() + suffix;
+    private MaintenanceServiceImpl getMaintenanceServiceImpl() {
+        return (MaintenanceServiceImpl) servletContext.getAttribute(getMaintenanceServiceLocation());
     }
-    
+
+
+    private String getMaintenanceServiceLocation()
+    {
+        return MaintenanceService.class.getName();
+    }
+
+    public MaintenanceService getInitializedMaintenanceService() {
+        MaintenanceServiceImpl maintenanceService = getMaintenanceServiceImpl();
+        maintenanceService.initializationComplete();
+        return maintenanceService;
+    }
 }

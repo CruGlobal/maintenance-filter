@@ -5,10 +5,10 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Home</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <h1>This page should should be hidden only if the default filter has an active maintenance window.</h1>
         <p>
           It is now <%= new java.util.Date().toString() %>.
         <p>

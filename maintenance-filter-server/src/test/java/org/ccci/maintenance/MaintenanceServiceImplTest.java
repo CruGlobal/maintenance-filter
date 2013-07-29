@@ -24,9 +24,8 @@ import org.testng.annotations.Test;
 public class MaintenanceServiceImplTest
 {
 
-    MaintenanceServiceImpl defaultService;
-    MaintenanceServiceImpl specialService;
-    
+    MaintenanceServiceImpl service;
+
     DataSource dataSource;
 
     @Mock
@@ -48,8 +47,10 @@ public class MaintenanceServiceImplTest
     @BeforeMethod
     public void setupService() throws SQLException
     {
-        defaultService = new MaintenanceServiceImpl(clock, dataSource, null, "secrets");
-        specialService = new MaintenanceServiceImpl(clock, dataSource, "special", "secrets");
+        service = new MaintenanceServiceImpl(clock, dataSource, "secrets");
+        service.addFilterName(null);
+        service.addFilterName("special");
+        service.initializationComplete();
         clearTable();
     }
     
@@ -72,16 +73,16 @@ public class MaintenanceServiceImplTest
         window.setBeginAt(new DateTime(2010, 9, 23, 2, 29, 50, 234));
         window.setEndAt(new DateTime(2010, 9, 23, 3, 35, 50, 0));
         
-        defaultService.createOrUpdateMaintenanceWindow(window);
+        service.createOrUpdateMaintenanceWindow(null, window);
         
         when(clock.currentDateTime()).thenReturn(new DateTime(2010, 9, 23, 2, 56, 24, 985));
         
-        MaintenanceWindow retrievedWindow = defaultService.getActiveMaintenanceWindow();
+        MaintenanceWindow retrievedWindow = service.getActiveMaintenanceWindow(null);
         
         assertThat(retrievedWindow, is(deeplyEqualTo(window)));
-        assertThat(specialService.getActiveMaintenanceWindow(), is(nullValue()));
+        assertThat(service.getActiveMaintenanceWindow("special"), is(nullValue()));
     }
-    
+
     @Test
     public void testCreateForNonDefaultFilter()
     {
@@ -92,15 +93,15 @@ public class MaintenanceServiceImplTest
         "Please visit <a href='http://www.youtube.com'>somewhere else</a> while you wait.");
         window.setBeginAt(new DateTime(2010, 9, 23, 2, 29, 50, 234));
         window.setEndAt(new DateTime(2010, 9, 23, 3, 35, 50, 0));
-        
-        specialService.createOrUpdateMaintenanceWindow(window);
-        
+
+        service.createOrUpdateMaintenanceWindow("special", window);
+
         when(clock.currentDateTime()).thenReturn(new DateTime(2010, 9, 23, 2, 56, 24, 985));
-        
-        MaintenanceWindow retrievedWindow = specialService.getActiveMaintenanceWindow();
+
+        MaintenanceWindow retrievedWindow = service.getActiveMaintenanceWindow("special");
         
         assertThat(retrievedWindow, is(deeplyEqualTo(window)));
-        assertThat(defaultService.getActiveMaintenanceWindow(), is(nullValue()));
+        assertThat(service.getActiveMaintenanceWindow(null), is(nullValue()));
     }
 
     @Test
@@ -114,7 +115,7 @@ public class MaintenanceServiceImplTest
         window.setBeginAt(new DateTime(2010, 9, 23, 2, 29, 50, 234));
         window.setEndAt(new DateTime(2010, 9, 23, 3, 35, 50, 0));
         
-        defaultService.createOrUpdateMaintenanceWindow(window);
+        service.createOrUpdateMaintenanceWindow(null, window);
         
         MaintenanceWindow updatedWindow = new MaintenanceWindow();
         updatedWindow.setId(window.getId());
@@ -123,11 +124,11 @@ public class MaintenanceServiceImplTest
         updatedWindow.setBeginAt(window.getBeginAt());
         updatedWindow.setEndAt(window.getEndAt().plusHours(3));
         
-        defaultService.createOrUpdateMaintenanceWindow(updatedWindow);
+        service.createOrUpdateMaintenanceWindow(null, updatedWindow);
         
         when(clock.currentDateTime()).thenReturn(new DateTime(2010, 9, 23, 2, 56, 24, 985));
         
-        MaintenanceWindow retrievedWindow = defaultService.getActiveMaintenanceWindow();
+        MaintenanceWindow retrievedWindow = service.getActiveMaintenanceWindow(null);
         
         assertThat(retrievedWindow, is(deeplyEqualTo(updatedWindow)));
     }
@@ -135,18 +136,18 @@ public class MaintenanceServiceImplTest
     @Test
     public void testInvalidAuthentication()
     {
-        assertThat(defaultService.isAuthenticated("pleaseletmein"), is(false));
+        assertThat(service.isAuthenticated("pleaseletmein"), is(false));
     }
 
     @Test
     public void testInvalidAuthenticationWithClosePassword()
     {
-        assertThat(defaultService.isAuthenticated("secretz"), is(false));
+        assertThat(service.isAuthenticated("secretz"), is(false));
     }
 
     @Test
     public void testValidAuthentication()
     {
-        assertThat(defaultService.isAuthenticated("secrets"), is(true));
+        assertThat(service.isAuthenticated("secrets"), is(true));
     }
 }

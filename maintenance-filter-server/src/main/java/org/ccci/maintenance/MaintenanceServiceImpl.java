@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -13,6 +16,7 @@ import org.ccci.maintenance.util.Exceptions;
 import org.ccci.maintenance.util.JdbcUtils;
 import org.ccci.maintenance.util.Objects;
 import org.ccci.maintenance.util.Preconditions;
+import org.ccci.maintenance.util.Strings;
 import org.ccci.maintenance.util.TimeUtil;
 import org.joda.time.DateTime;
 
@@ -23,30 +27,32 @@ public class MaintenanceServiceImpl implements MaintenanceService
     
     private final Clock clock;
     private final DataSource dataSource;
-    private final String filterName;
     private String key;
+    private Set<String> filterNames = new HashSet<String>(5);
 
-    public MaintenanceServiceImpl(Clock clock, DataSource dataSource, String filterName, String key)
+    public MaintenanceServiceImpl(Clock clock, DataSource dataSource, String key)
     {
         this.clock = clock;
         this.dataSource = dataSource;
-        this.filterName = filterName;
         this.key = key;
     }
 
-    public MaintenanceWindow getActiveMaintenanceWindow()
+    public MaintenanceWindow getActiveMaintenanceWindow(String filterName)
     {
-        Connection connnection;
+        if (!filterExists(filterName))
+            throw new IllegalStateException("invalid filterName: " + filterName);
+
+        Connection connection;
         try
         {
-            connnection = dataSource.getConnection();
+            connection = dataSource.getConnection();
             try
             {
-                return getCurrentWindowWithConnection(connnection);
+                return getCurrentWindowWithConnection(connection, filterName);
             }
             finally
             {
-                JdbcUtils.close(connnection);
+                JdbcUtils.close(connection);
             }
         }
         catch (SQLException e)
@@ -55,15 +61,15 @@ public class MaintenanceServiceImpl implements MaintenanceService
         }
     }
 
-    private MaintenanceWindow getCurrentWindowWithConnection(Connection connnection) throws SQLException
+    private MaintenanceWindow getCurrentWindowWithConnection(Connection connnection, String filterName) throws SQLException
     {
         String sql = "select * from MaintenanceWindow where " +
         		"(beginAt < ? or beginAt is null) and " +
-        		"(endAt > ? or endAt is null) " + buildFilterNameClause();
+        		"(endAt > ? or endAt is null) " + buildFilterNameClause(filterName);
         PreparedStatement statement = connnection.prepareStatement(sql);
         try
         {
-            return getCurrentWindowWithStatement(statement);
+            return getCurrentWindowWithStatement(statement, filterName);
         }
         finally
         {
@@ -71,7 +77,7 @@ public class MaintenanceServiceImpl implements MaintenanceService
         }
     }
 
-    private String buildFilterNameClause()
+    private String buildFilterNameClause(String filterName)
     {
         if (filterName == null)
             return " and (filterName is null)";
@@ -79,7 +85,7 @@ public class MaintenanceServiceImpl implements MaintenanceService
             return " and (filterName = ?)"; 
     }
 
-    private MaintenanceWindow getCurrentWindowWithStatement(PreparedStatement statement) throws SQLException
+    private MaintenanceWindow getCurrentWindowWithStatement(PreparedStatement statement, String filterName) throws SQLException
     {
         DateTime currentDateTime = clock.currentDateTime();
         Timestamp timestamp = TimeUtil.dateTimeToSqlTimestamp(currentDateTime);
@@ -126,19 +132,19 @@ public class MaintenanceServiceImpl implements MaintenanceService
         return window;
     }
     
-    public void createOrUpdateMaintenanceWindow(MaintenanceWindow window)
+    public void createOrUpdateMaintenanceWindow(String filterName, MaintenanceWindow window)
     {
-        Connection connnection;
+        Connection connection;
         try
         {
-            connnection = dataSource.getConnection();
+            connection = dataSource.getConnection();
             try
             {
-                createOrUpdateMaintenanceWindowWithConnection(connnection, window);
+                createOrUpdateMaintenanceWindowWithConnection(connection, window, filterName);
             }
             finally
             {
-                JdbcUtils.close(connnection);
+                JdbcUtils.close(connection);
             }
         }
         catch (SQLException e)
@@ -147,21 +153,21 @@ public class MaintenanceServiceImpl implements MaintenanceService
         }
     }
 
-    private void createOrUpdateMaintenanceWindowWithConnection(Connection connnection, MaintenanceWindow window) throws SQLException
+    private void createOrUpdateMaintenanceWindowWithConnection(Connection connnection, MaintenanceWindow window, String filterName) throws SQLException
     {
         /* don't really need to deal with transactions here; we're simple enough to get by with autocommit */
         connnection.setAutoCommit(true);
         
-        if (! updateMaintenanceWindowWithConnection(connnection, window))
+        if (! updateMaintenanceWindowWithConnection(connnection, window, filterName))
         {
-            createMaintenanceWindowWithConnection(connnection, window);
+            createMaintenanceWindowWithConnection(connnection, window, filterName);
         }
     }
 
     /** returns true if the row existed and was updated, false otherwise */
-    private boolean updateMaintenanceWindowWithConnection(Connection connection, MaintenanceWindow window) throws SQLException
+    private boolean updateMaintenanceWindowWithConnection(Connection connection, MaintenanceWindow window, String filterName) throws SQLException
     {
-        checkIdNotInUseByAnotherFilter(connection, window.getId());
+        checkIdNotInUseByAnotherFilter(connection, window.getId(), filterName);
         
         String sql = "update MaintenanceWindow " +
         		"set " +
@@ -181,13 +187,13 @@ public class MaintenanceServiceImpl implements MaintenanceService
         }
     }
 
-    private void checkIdNotInUseByAnotherFilter(Connection connection, String id) throws SQLException
+    private void checkIdNotInUseByAnotherFilter(Connection connection, String id, String filterName) throws SQLException
     {
         String sql = "select filterName from MaintenanceWindow where id = ?";
         PreparedStatement statement = connection.prepareStatement(sql);
         try
         {
-            checkIdNotInUseByAnotherFilterWithStatement(statement, id);
+            checkIdNotInUseByAnotherFilterWithStatement(statement, id, filterName);
         }
         finally
         {
@@ -195,13 +201,13 @@ public class MaintenanceServiceImpl implements MaintenanceService
         }
     }
 
-    private void checkIdNotInUseByAnotherFilterWithStatement(PreparedStatement statement, String id) throws SQLException
+    private void checkIdNotInUseByAnotherFilterWithStatement(PreparedStatement statement, String id, String filterName) throws SQLException
     {
         statement.setString(1, id);
         ResultSet resultSet = statement.executeQuery();
         try
         {
-            checkIdNotInUseByAnotherFilterWithResultSet(resultSet, id);
+            checkIdNotInUseByAnotherFilterWithResultSet(resultSet, id, filterName);
         }
         finally
         {
@@ -209,16 +215,16 @@ public class MaintenanceServiceImpl implements MaintenanceService
         }
     }
 
-    private void checkIdNotInUseByAnotherFilterWithResultSet(ResultSet resultSet, String id) throws SQLException
+    private void checkIdNotInUseByAnotherFilterWithResultSet(ResultSet resultSet, String id, String targetFilterName) throws SQLException
     {
         if (resultSet.next())
         {
-            String filterName = resultSet.getString("filterName");
-            Preconditions.checkArgument(Objects.equal(filterName, this.filterName),
+            String otherfilterName = resultSet.getString("filterName");
+            Preconditions.checkArgument(Objects.equal(otherfilterName, targetFilterName),
                 "the '%s' maintenance window is owned by %s, not by %s",
                 id,
-                getFilterDescription(filterName),
-                getFilterDescription(this.filterName));
+                getFilterDescription(otherfilterName),
+                getFilterDescription(targetFilterName));
             Preconditions.checkState(!resultSet.next(), "More than one window exists for id " + id);
         }
     }
@@ -242,7 +248,7 @@ public class MaintenanceServiceImpl implements MaintenanceService
         return rowsUpdated == 1;
     }
     
-    private void createMaintenanceWindowWithConnection(Connection connnection, MaintenanceWindow window) throws SQLException
+    private void createMaintenanceWindowWithConnection(Connection connnection, MaintenanceWindow window, String filterName) throws SQLException
     {
         String sql = "insert into MaintenanceWindow (" +
                 "shortMessage, " +
@@ -257,7 +263,7 @@ public class MaintenanceServiceImpl implements MaintenanceService
         PreparedStatement statement = connnection.prepareStatement(sql);
         try
         {
-            createMaintenanceWindowWithStatement(statement, window);
+            createMaintenanceWindowWithStatement(statement, window, filterName);
         }
         finally
         {
@@ -265,7 +271,7 @@ public class MaintenanceServiceImpl implements MaintenanceService
         }
     }
 
-    private void createMaintenanceWindowWithStatement(PreparedStatement statement, MaintenanceWindow window) throws SQLException
+    private void createMaintenanceWindowWithStatement(PreparedStatement statement, MaintenanceWindow window, String filterName) throws SQLException
     {
         statement.setString(1, window.getShortMessage());
         statement.setString(2, window.getLongMessage());
@@ -282,6 +288,10 @@ public class MaintenanceServiceImpl implements MaintenanceService
         return isEqualInConstantTime(key, this.key);
     }
 
+    public boolean filterExists(String filterName) {
+        return filterNames.contains(Strings.nullToEmpty(filterName));
+    }
+
     // see http://codahale.com/a-lesson-in-timing-attacks/
     private boolean isEqualInConstantTime(String a, String b) {
         if (a.length() != b.length()) {
@@ -295,5 +305,12 @@ public class MaintenanceServiceImpl implements MaintenanceService
         return result;
     }
 
+    public void addFilterName(String filterName) {
+        filterNames.add(Strings.nullToEmpty(filterName));
+    }
 
+    public void initializationComplete() {
+        //If/when I depend on guava, use ImmutableSet instead
+        filterNames = Collections.unmodifiableSet(filterNames);
+    }
 }

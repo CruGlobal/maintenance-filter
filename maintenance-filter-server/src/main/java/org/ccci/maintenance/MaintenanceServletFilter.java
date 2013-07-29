@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.ccci.maintenance.util.Objects;
 import org.ccci.maintenance.util.ServletRequestMatcher;
 
 public class MaintenanceServletFilter implements Filter
@@ -26,7 +27,7 @@ public class MaintenanceServletFilter implements Filter
     private MaintenanceService maintenanceService;
 
     private Bootstrap bootstrap;
-    
+
     /**
      * if null, then this filter is the default maintenance filter.  Otherwise, this is the filter's name.
      */
@@ -35,10 +36,12 @@ public class MaintenanceServletFilter implements Filter
     public void init(FilterConfig filterConfig) throws ServletException
     {
         name = filterConfig.getInitParameter("name");
+        if (Objects.equal(name, ""))
+            name = null;
         ServletContext servletContext = filterConfig.getServletContext();
         new Bootstrap(servletContext).init(name);
         bootstrap = Bootstrap.getInstance(servletContext);
-        maintenanceService = bootstrap.getMaintenanceService(name);
+        maintenanceService = bootstrap.getMaintenanceService();
         ignoredRequestsMatcher = buildIgnoredRequestsMatcher(filterConfig);
     }
 
@@ -62,7 +65,7 @@ public class MaintenanceServletFilter implements Filter
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException
     {
-        MaintenanceWindow window = maintenanceService.getActiveMaintenanceWindow();
+        MaintenanceWindow window = maintenanceService.getActiveMaintenanceWindow(name);
         if (window == null)
         {
             chain.doFilter(request, response);
@@ -103,7 +106,7 @@ public class MaintenanceServletFilter implements Filter
     private boolean shouldBypass(ServletRequest request)
     {
         if (isBypassRequestParameterPresent(request))
-            return true;;
+            return true;
         
         if (request instanceof HttpServletRequest)
         {
@@ -116,19 +119,14 @@ public class MaintenanceServletFilter implements Filter
                     return true;
             }
         }
-        
-        if (ignoredRequestsMatcher.matches(request))
-            return true;
-        
-        return false;
+
+        return ignoredRequestsMatcher.matches(request);
     }
 
     private boolean isBypassRequestParameterPresent(ServletRequest request)
     {
         String bypassMaintenanceFilter = request.getParameter(WindowControlApi.BYPASS_REQUEST_PARAMETER);
-        if (bypassMaintenanceFilter != null && bypassMaintenanceFilter.equals("true"))
-            return true;
-        return false;
+        return bypassMaintenanceFilter != null && bypassMaintenanceFilter.equals("true");
     }
 
     private String getSessionLocation()

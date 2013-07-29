@@ -48,13 +48,23 @@ public class MaintenanceControlServlet extends HttpServlet
     private void handle(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String pathInfo = request.getPathInfo();
-        if (pathInfo != null && pathInfo.equals("/" + WindowControlApi.CREATE_OR_UPDATE_PATH))
+        PathParser parser = new PathParser();
+        parser.parse(pathInfo);
+        if (parser.isValid())
         {
-                handleUpdate(request, response);
+            String action = parser.getAction();
+            if (!action.equals(WindowControlApi.CREATE_OR_UPDATE_PATH)) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "no such command");
+            }
+            String filterName = parser.getFilterName();
+            if (!maintenanceService.filterExists(filterName))
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "no maintenance filter named " + filterName);
+
+            handleUpdate(request, response, filterName);
         }
         else
         {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "no such command");
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "invalid maintenance control path");
         }
     }
 
@@ -66,13 +76,13 @@ public class MaintenanceControlServlet extends HttpServlet
     }
 
 
-    private void handleUpdate(HttpServletRequest request, HttpServletResponse response) throws IOException
+    private void handleUpdate(HttpServletRequest request, HttpServletResponse response, String filterName) throws IOException
     {
         MaintenanceWindow window = constructWindowFromRequest(request);
         log.info("updating window " + window);
         try
         {
-            maintenanceService.createOrUpdateMaintenanceWindow(window);
+            maintenanceService.createOrUpdateMaintenanceWindow(filterName, window);
         }
         catch (IllegalArgumentException e)
         {
@@ -146,9 +156,8 @@ public class MaintenanceControlServlet extends HttpServlet
     @Override
     public void init(ServletConfig config) throws ServletException
     {
-        String name = config.getInitParameter("name");
         Bootstrap bootstrap = Bootstrap.getInstance(config.getServletContext());
-        maintenanceService = bootstrap.getMaintenanceService(name);
+        maintenanceService = bootstrap.getInitializedMaintenanceService();
     }
     
     
