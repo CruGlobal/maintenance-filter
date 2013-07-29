@@ -29,7 +29,7 @@ public class MaintenanceServletFilter implements Filter
     private Bootstrap bootstrap;
 
     /**
-     * if null, then this filter is the default maintenance filter.  Otherwise, this is the filter's name.
+     * if null, then this filter is part of the default maintenance filter.  Otherwise, this is the filter's name.
      */
     private String name;
 
