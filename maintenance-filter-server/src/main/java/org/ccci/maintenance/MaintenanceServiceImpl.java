@@ -290,7 +290,7 @@ public class MaintenanceServiceImpl implements MaintenanceService
 
         boolean result = true;
         for (int i = 0; i < a.length(); i++) {
-            result = result && (a.charAt(i) == b.charAt(i));
+            result = result & (a.charAt(i) == b.charAt(i));
         }
         return result;
     }
