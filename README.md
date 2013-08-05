@@ -15,9 +15,10 @@ displaying the message, thereby shutting off user access to the app.
 Other Features
 ==============
 * you can skip the message screen with a query parameter, so it's easy to test the site is working while everyone
- is still locked out
+  is still locked out
 * messages can contain html, which is useful for links to pages with further information
-* if only part of your app
+* if only part of your app is really a combination of apps, you can set up specialized filters for the various pieces 
+  and disable only one at a time
 
 
 Requirements
