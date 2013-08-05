@@ -14,7 +14,7 @@ copy jars into target app's WEB-INF/lib folder:
 
 Edit the target app's WEB-INF/web.xml file, and add configuration similar to the following:
  ```xml
-  <!-- if you have a datasource configured (via the appserver or something), use this:
+  <!-- if you have a datasource configured (via the appserver or something), use this: -->
   <context-param>
     <param-name>org.ccci.maintenance.window.datasource</param-name>
     <param-value>java:/jboss/maintenance_filter</param-value> 
