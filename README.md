@@ -25,8 +25,8 @@ Requirements
 * Servlet environment
 * Commons-IO
 * Joda-Time
+* log4j
 * H2 (if you don't configure your own datasource)
-
 
 Usage
 =====
