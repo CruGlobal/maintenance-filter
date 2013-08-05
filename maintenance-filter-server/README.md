@@ -1,4 +1,6 @@
-Installation instructions:
+Installation instructions
+=========================
+
 
 copy jars into target app's WEB-INF/lib folder:
 * guava-r07.jar
@@ -11,7 +13,7 @@ copy jars into target app's WEB-INF/lib folder:
 (Note that versions are correct as of this writing, but may not be correct by the time you read this.)
 
 Edit the target app's WEB-INF/web.xml file, and add configuration similar to the following:
-
+ ```xml
   <!-- if you have a datasource configured (via the appserver or something), use this:
   <context-param>
     <param-name>org.ccci.maintenance.window.datasource</param-name>
@@ -42,6 +44,7 @@ Edit the target app's WEB-INF/web.xml file, and add configuration similar to the
   <servlet-mapping>
     <servlet-name>MaintenanceControlServlet</servlet-name>
     <url-pattern>/maintenanceControl/*</url-pattern>
+    <!--  or whatever you'd like -->
   </servlet-mapping>
 
   <filter>
@@ -68,4 +71,4 @@ Edit the target app's WEB-INF/web.xml file, and add configuration similar to the
     <!-- generally you will want to map to all urls -->
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  
+```
