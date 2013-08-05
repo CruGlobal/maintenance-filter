@@ -30,7 +30,7 @@ Requirements
 
 Usage
 =====
-see [maintenance-filter-server's readme](/maintenance-filter-server/readme.txt) for server-side configuration.
+see [maintenance-filter-server's readme](/maintenance-filter-server/README.md) for server-side configuration.
 
 TODO: client-side instructions (but see an example config file [here](/maintenance-filter-controller/src/test/resources/maintenanceWindowUpdate.yml))
 
