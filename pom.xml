@@ -85,5 +85,12 @@
       </plugins>
     </pluginManagement>
   </build>
-  
+
+  <licenses>
+    <license>
+      <name>The MIT License (MIT)</name>
+      <url>http://opensource.org/licenses/MIT</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 </project>

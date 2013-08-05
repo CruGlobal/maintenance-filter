@@ -36,5 +36,8 @@ see [maintenance-filter-server's readme](/maintenance-filter-server/README.md) f
 TODO: client-side instructions (but see an example config file [here](/maintenance-filter-controller/src/test/resources/maintenanceWindowUpdate.yml))
 
 
+License
+=======
+maintenance-filter is released under the MIT license:  http://www.opensource.org/licenses/MIT
 
 
