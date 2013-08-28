@@ -21,11 +21,17 @@ Edit the target app's WEB-INF/web.xml file, and add configuration similar to the
     <!-- or whatever jndi location you'd like -->
   </context-param>
 
-  <!-- alternatively, if you want the filter to create and managed a connection pool, this parameter indicates where the h2 local maintenance window database should be created -->
+  <!-- 
+    alternatively, if you want the filter to create and managed a connection pool, this 
+    parameter indicates where the h2 local maintenance window database should be created 
+  -->
   <context-param>
     <param-name>org.ccci.maintenance.window.db.path</param-name>
-    <param-value>testapp</param-value>
-    <!-- results in database file at target/testapp.h2.db (relative the working path of the jvm)-->
+    <param-value>working-data/myapp-maintenance</param-value>
+    <!-- 
+      results in an H2 database file at working-data/myapp-maintenance.h2.db (relative to 
+      the working path of the jvm)
+    -->
   </context-param>
 
   <!-- you need to set a shared secret to authenticate the maintenance-filter-controller client -->  
