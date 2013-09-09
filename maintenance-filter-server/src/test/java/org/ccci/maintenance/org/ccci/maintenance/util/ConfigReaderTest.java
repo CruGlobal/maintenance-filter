@@ -1,11 +1,8 @@
 package org.ccci.maintenance.org.ccci.maintenance.util;
 
 import org.ccci.maintenance.util.ConfigReader;
-import org.ccci.maintenance.util.JdbcUtils;
-import org.h2.jdbcx.JdbcDataSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
