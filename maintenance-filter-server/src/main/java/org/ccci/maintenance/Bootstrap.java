@@ -12,6 +12,7 @@ import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
 import org.ccci.maintenance.util.Clock;
+import org.ccci.maintenance.util.ConfigReader;
 import org.ccci.maintenance.util.Exceptions;
 import org.h2.jdbcx.JdbcConnectionPool;
 
@@ -19,11 +20,13 @@ public class Bootstrap
 {
 
     private final ServletContext servletContext;
+    private final ConfigReader configReader;
     private JdbcConnectionPool pool;
 
     public Bootstrap(ServletContext servletContext)
     {
         this.servletContext = servletContext;
+        this.configReader = new ConfigReader(servletContext, System.getProperties());
     }
 
     public static Bootstrap getInstance(ServletContext servletContext)
@@ -64,7 +67,7 @@ public class Bootstrap
 
     private String getKey() {
         String keyParamName = "org.ccci.maintenance.window.key";
-        String key = servletContext.getInitParameter(keyParamName);
+        String key = configReader.getParameter(keyParamName);
 
         if (key == null)
         {
@@ -108,14 +111,14 @@ public class Bootstrap
         String datasourceParamName = "org.ccci.maintenance.window.datasource";
         String dbPathParamName = "org.ccci.maintenance.window.db.path";
         
-        String datasourceLocation = servletContext.getInitParameter(datasourceParamName);
+        String datasourceLocation = configReader.getParameter(datasourceParamName);
         if (datasourceLocation != null)
         {
             return lookupDataSource(datasourceLocation);
         }
         else
         {
-            String dbPath = servletContext.getInitParameter(dbPathParamName);
+            String dbPath = configReader.getParameter(dbPathParamName);
             if (dbPath == null)
             {
                 dbPath = getDbPathFromConfigFileOrFail(datasourceParamName, dbPathParamName);
@@ -129,7 +132,7 @@ public class Bootstrap
         String configFileNameParamName = "org.ccci.maintenance.window.db.path.configfile.name";
         String configFilePropertyKeyParamName = "org.ccci.maintenance.window.db.path.configfile.propertykey";
 
-        String configFile = servletContext.getInitParameter(configFileNameParamName);
+        String configFile = configReader.getParameter(configFileNameParamName);
         if (configFile == null)
         {
             throw new IllegalArgumentException(String.format(
@@ -141,7 +144,7 @@ public class Bootstrap
         }
         else
         {
-            String dbPathPropertyKey = servletContext.getInitParameter(configFilePropertyKeyParamName);
+            String dbPathPropertyKey = configReader.getParameter(configFilePropertyKeyParamName);
             if (dbPathPropertyKey == null)
                 throw new IllegalArgumentException(String.format(
                     "you must provide %s when you use %s",
