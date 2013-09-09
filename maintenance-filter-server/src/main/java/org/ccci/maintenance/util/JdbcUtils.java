@@ -1,11 +1,11 @@
 package org.ccci.maintenance.util;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.h2.jdbcx.JdbcDataSource;
 
 public class JdbcUtils
 {
@@ -47,7 +47,7 @@ public class JdbcUtils
         }
     }
 
-    public static void executeUpdate(JdbcDataSource dataSource, String sql) throws SQLException
+    public static void executeUpdate(DataSource dataSource, String sql) throws SQLException
     {
         Connection connection = dataSource.getConnection();
         try

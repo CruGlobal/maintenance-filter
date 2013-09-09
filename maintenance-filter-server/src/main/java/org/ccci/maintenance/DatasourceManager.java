@@ -2,7 +2,6 @@ package org.ccci.maintenance;
 
 import org.ccci.maintenance.util.ConfigReader;
 import org.ccci.maintenance.util.Exceptions;
-import org.h2.jdbcx.JdbcConnectionPool;
 
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
@@ -10,7 +9,6 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -19,9 +17,7 @@ import java.util.Properties;
 public class DatasourceManager {
 
     private ConfigReader configReader;
-    private JdbcConnectionPool pool;
-
-
+    private H2DatasourcePool pool;
 
     String datasourceParamName = "org.ccci.maintenance.window.datasource";
     String dbPathParamName = "org.ccci.maintenance.window.db.path";
@@ -47,8 +43,9 @@ public class DatasourceManager {
             {
                 dbPath = getDbPathFromConfigFileOrFail();
             }
-            initH2DatasourcePoolLocatedAt(dbPath);
-            return pool;
+            pool = new H2DatasourcePool();
+            pool.initH2DatabaseLocatedAt(dbPath);
+            return pool.getDataSource();
         }
     }
 
@@ -131,15 +128,6 @@ public class DatasourceManager {
         }
     }
 
-    private void initH2DatasourcePoolLocatedAt(String dbPath)
-    {
-        /*
-         * use a file-based database, since this must persist across jvm restarts.
-         */
-        String url = "jdbc:h2:file:" + dbPath;
-        pool = JdbcConnectionPool.create(url, "sa", "");
-    }
-
     private DataSource lookupDataSource(String datasourceLocation)
     {
         try
@@ -172,15 +160,7 @@ public class DatasourceManager {
     {
         if (pool != null)
         {
-            try
-            {
-                pool.dispose();
-                pool = null;
-            }
-            catch (SQLException e)
-            {
-                throw Exceptions.wrap(e);
-            }
+            pool.dispose();
         }
     }
 
