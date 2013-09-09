@@ -47,7 +47,7 @@ public class Bootstrap
         MaintenanceServiceImpl maintenanceService;
         if (bootstrap == null)
         {
-            DataSource dataSource = createDataSource();
+            DataSource dataSource = lookupOrCreateDataSource();
             initDatabaseIfNecessary(dataSource);
             servletContext.setAttribute(bootstrapLocation, this);
 
@@ -103,12 +103,10 @@ public class Bootstrap
         new DatabaseMigrator(dataSource).migrate();
     }
 
-    private DataSource createDataSource()
+    private DataSource lookupOrCreateDataSource()
     {
         String datasourceParamName = "org.ccci.maintenance.window.datasource";
         String dbPathParamName = "org.ccci.maintenance.window.db.path";
-        String configFileNameParamName = "org.ccci.maintenance.window.db.path.configfile.name";
-        String configFilePropertyKeyParamName = "org.ccci.maintenance.window.db.path.configfile.propertykey";
         
         String datasourceLocation = servletContext.getInitParameter(datasourceParamName);
         if (datasourceLocation != null)
@@ -120,31 +118,37 @@ public class Bootstrap
             String dbPath = servletContext.getInitParameter(dbPathParamName);
             if (dbPath == null)
             {
-                String configFile = servletContext.getInitParameter(configFileNameParamName);
-                if (configFile == null)
-                {
-                    throw new IllegalArgumentException(String.format(
-                        "you must provide either %s, %s, or %s  as an init-param",
-                        datasourceParamName,
-                        dbPathParamName,
-                        configFileNameParamName
-                    ));
-                }
-                else
-                {
-                    String dbPathPropertyKey = servletContext.getInitParameter(configFilePropertyKeyParamName);
-                    if (dbPathPropertyKey == null)
-                        throw new IllegalArgumentException(String.format(
-                            "you must provide %s when you use %s",
-                            configFilePropertyKeyParamName,
-                            configFileNameParamName
-                        ));
-                    dbPath = getDatabasePathFromConfigFile(configFile, dbPathPropertyKey);
-                }
+                dbPath = getDbPathFromConfigFileOrFail(datasourceParamName, dbPathParamName);
             }
             initH2DatasourcePoolLocatedAt(dbPath);
             return pool;
+        }
+    }
 
+    private String getDbPathFromConfigFileOrFail(String datasourceParamName, String dbPathParamName) {
+        String configFileNameParamName = "org.ccci.maintenance.window.db.path.configfile.name";
+        String configFilePropertyKeyParamName = "org.ccci.maintenance.window.db.path.configfile.propertykey";
+
+        String configFile = servletContext.getInitParameter(configFileNameParamName);
+        if (configFile == null)
+        {
+            throw new IllegalArgumentException(String.format(
+                "you must provide either %s, %s, or %s  as an init-param",
+                datasourceParamName,
+                dbPathParamName,
+                configFileNameParamName
+            ));
+        }
+        else
+        {
+            String dbPathPropertyKey = servletContext.getInitParameter(configFilePropertyKeyParamName);
+            if (dbPathPropertyKey == null)
+                throw new IllegalArgumentException(String.format(
+                    "you must provide %s when you use %s",
+                    configFilePropertyKeyParamName,
+                    configFileNameParamName
+                ));
+            return getDatabasePathFromConfigFile(configFile, dbPathPropertyKey);
         }
     }
 
