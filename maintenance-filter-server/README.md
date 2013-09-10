@@ -78,3 +78,16 @@ Edit the target app's WEB-INF/web.xml file, and add configuration similar to the
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 ```
+
+
+Usage on Tomcat
+---------------
+
+If you configure the maintenance filter to set up its own maintenance database (eg by using
+`org.ccci.maintenance.window.db.path`), then be aware that you may see these log lines when you shut down tomcat:
+```
+SEVERE: The web application [/myapp] appears to have started a thread named [H2 Log Writer MAINTENANCE_FILTER] but has failed to stop it. This is very likely to create a memory leak.
+```
+I believe this is due to the fact that H2 shuts down somewhat asynchronously, and its shutdown thread isn't finished by
+the time Tomcat checks for un-cleaned-up threads.  I am not sure if this causes a webapp-classloader leak or not, but I
+don't think it does.
