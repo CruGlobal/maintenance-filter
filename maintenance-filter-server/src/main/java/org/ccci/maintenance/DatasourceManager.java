@@ -161,6 +161,7 @@ public class DatasourceManager {
         if (pool != null)
         {
             pool.dispose();
+            pool = null;
         }
     }
 
