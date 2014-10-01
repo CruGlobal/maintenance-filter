@@ -36,6 +36,12 @@ public class Bootstrap
 
     public void init(String filterName)
     {
+        MaintenanceServiceImpl maintenanceService = getOrCreateMaintenanceService();
+        maintenanceService.addFilterName(filterName);
+    }
+
+    private MaintenanceServiceImpl getOrCreateMaintenanceService()
+    {
         String bootstrapLocation = Bootstrap.class.getName();
         Bootstrap bootstrap = (Bootstrap) servletContext.getAttribute(bootstrapLocation);
         MaintenanceServiceImpl maintenanceService;
@@ -53,7 +59,7 @@ public class Bootstrap
         {
             maintenanceService = getMaintenanceServiceImpl();
         }
-        maintenanceService.addFilterName(filterName);
+        return maintenanceService;
     }
 
     private String getKey() {
