@@ -38,11 +38,23 @@ public class MaintenanceServletFilter implements Filter
         name = filterConfig.getInitParameter("name");
         if (Objects.equal(name, ""))
             name = null;
+        validate(name);
         ServletContext servletContext = filterConfig.getServletContext();
         new Bootstrap(servletContext).init(name);
         bootstrap = Bootstrap.getInstance(servletContext);
         maintenanceService = bootstrap.getMaintenanceService();
         ignoredRequestsMatcher = buildIgnoredRequestsMatcher(filterConfig);
+    }
+
+    private void validate(String name) throws ServletException
+    {
+        if (name != null)
+        {
+            if (!new PathParser().isValidFilterName(name))
+            {
+                throw new ServletException(name + " is not a valid maintenance filter name");
+            }
+        }
     }
 
     private ServletRequestMatcher buildIgnoredRequestsMatcher(FilterConfig filterConfig)

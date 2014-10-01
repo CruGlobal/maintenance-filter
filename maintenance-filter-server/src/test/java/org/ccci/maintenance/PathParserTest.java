@@ -90,4 +90,17 @@ public class PathParserTest {
         parser.parse("/foo/bar/baz");
         assert !parser.isValid();
     }
+
+    @Test
+    public void testValidatingSimpleFilterName()
+    {
+        assert parser.isValidFilterName("simple");
+    }
+
+    @Test
+    public void testValidatingBadFilterName()
+    {
+        assert !parser.isValidFilterName("not so simple or correct");
+    }
+
 }

@@ -8,7 +8,8 @@ import java.util.regex.Pattern;
  */
 public class PathParser {
 
-    private static Pattern pattern = Pattern.compile("/(\\w+)(/(\\w+))?");
+    public static final String ACTION_OR_FILTER_NAME = "\\w+";
+    private static Pattern pattern = Pattern.compile("/(" + ACTION_OR_FILTER_NAME + ")(/(" + ACTION_OR_FILTER_NAME + "))?");
 
     Matcher matcher;
     public void parse(String pathInfo)
@@ -37,4 +38,8 @@ public class PathParser {
             return matcher.group(1);
     }
 
+    public boolean isValidFilterName(String name)
+    {
+        return name.matches(ACTION_OR_FILTER_NAME);
+    }
 }
