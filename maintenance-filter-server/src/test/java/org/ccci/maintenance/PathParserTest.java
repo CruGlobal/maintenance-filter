@@ -103,4 +103,10 @@ public class PathParserTest {
         assert !parser.isValidFilterName("not so simple or correct");
     }
 
+    @Test
+    public void testValidatingComplexButValidFilterName()
+    {
+        assert parser.isValidFilterName("This_should+be-ok");
+    }
+
 }
