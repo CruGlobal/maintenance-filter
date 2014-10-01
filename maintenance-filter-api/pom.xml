@@ -19,6 +19,8 @@
     <!-- 
       Used for annotations only; for now, we don't peform the actual validation.  So if javax.validation isn't on the server, that's ok. 
       Therefore marked as 'provided'
+
+      TODO: the lack of validation has now bitten me. Need to figure out a reasonable solution.
     -->
     <dependency>
       <groupId>javax.validation</groupId>
