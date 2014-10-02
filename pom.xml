@@ -14,7 +14,7 @@
   <version>1-SNAPSHOT</version>
   
   
-  <description>Provides a utility to easily block access to a web application during a maintenance outtage.  Users will see a configured message.</description>
+  <description>Provides a utility to easily block access to a web application during a maintenance outage.  Users will see a configured message.</description>
   <modules>
   	<module>maintenance-filter-server</module>
   	<module>maintenance-filter-controller</module>
