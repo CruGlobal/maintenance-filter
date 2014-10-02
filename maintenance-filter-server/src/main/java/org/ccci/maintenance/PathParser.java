@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  */
 public class PathParser {
 
-    public static final String ACTION_OR_FILTER_NAME = "[\\w\\-+]+";
+    private static final String ACTION_OR_FILTER_NAME = "[\\w\\-+]+";
     private static Pattern pattern = Pattern.compile("/(" + ACTION_OR_FILTER_NAME + ")(/(" + ACTION_OR_FILTER_NAME + "))?");
 
     Matcher matcher;
