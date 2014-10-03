@@ -8,9 +8,26 @@ import java.util.regex.Pattern;
  */
 public class PathParser {
 
-    private static Pattern pattern = Pattern.compile("/(\\w+)(/(\\w+))?");
+    private static final String ACTION_OR_FILTER_NAME = "[\\w\\-+]+";
+    private static Pattern pattern = Pattern.compile("/(" + ACTION_OR_FILTER_NAME + ")(/(" + ACTION_OR_FILTER_NAME + "))?");
 
     Matcher matcher;
+
+
+    /**
+     * Intended to parse a path that is either just an action,
+     * or a named filter and an action.
+     *
+     * Examples:
+     * <ul>
+     *   <li>
+     *      /updateWindow
+     *   </li>
+     *   <li>
+     *      /hrDatabase/updateWindow
+     *   </li>
+     * </ul>
+     */
     public void parse(String pathInfo)
     {
         if (pathInfo == null)
@@ -37,4 +54,8 @@ public class PathParser {
             return matcher.group(1);
     }
 
+    public boolean isValidFilterName(String name)
+    {
+        return name.matches(ACTION_OR_FILTER_NAME);
+    }
 }
