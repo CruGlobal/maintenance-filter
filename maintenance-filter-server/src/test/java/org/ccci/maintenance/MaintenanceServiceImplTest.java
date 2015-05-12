@@ -1,31 +1,30 @@
 package org.ccci.maintenance;
 
+import org.ccci.maintenance.util.Clock;
+import org.ccci.maintenance.util.InfinispanMaintenanceWindowDao;
+import org.ccci.maintenance.util.JdbcMaintenanceWindowDao;
+import org.ccci.maintenance.util.MaintenanceWindowDao;
+import org.h2.jdbcx.JdbcDataSource;
+import org.infinispan.manager.DefaultCacheManager;
+import org.infinispan.manager.EmbeddedCacheManager;
+import org.joda.time.DateTime;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import static com.atlassian.hamcrest.DeepIsEqual.deeplyEqualTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.sql.DataSource;
-
-import org.ccci.maintenance.util.Clock;
-import org.ccci.maintenance.util.InfinispanMaintenanceWindowDao;
-import org.ccci.maintenance.util.JdbcMaintenanceWindowDao;
-import org.ccci.maintenance.util.MaintenanceWindowDao;
-import org.ccci.maintenance.util.OwnedMaintenanceWindow;
-import org.h2.jdbcx.JdbcDataSource;
-import org.infinispan.Cache;
-import org.infinispan.manager.DefaultCacheManager;
-import org.joda.time.DateTime;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 
 public class MaintenanceServiceImplTest
@@ -33,13 +32,13 @@ public class MaintenanceServiceImplTest
 
     DataSource dataSource;
 
-    Cache<String, OwnedMaintenanceWindow> cache;
+    EmbeddedCacheManager cacheManager;
 
     @Mock
     Clock clock;
 
     @BeforeClass
-    public void setupDb()
+    public void setup()
     {
         MockitoAnnotations.initMocks(this);
 
@@ -50,7 +49,13 @@ public class MaintenanceServiceImplTest
 
         new DatabaseMigrator(dataSource).migrate();
 
-        cache = new DefaultCacheManager().getCache();
+        cacheManager = new DefaultCacheManager();
+    }
+
+    @AfterClass
+    public void shutdown()
+    {
+        cacheManager.stop();
     }
 
     @BeforeMethod
@@ -58,7 +63,7 @@ public class MaintenanceServiceImplTest
     {
         clearTable();
 
-        cache.clear();
+        cacheManager.getCache().clear();
     }
 
     private void clearTable() throws SQLException
@@ -84,7 +89,7 @@ public class MaintenanceServiceImplTest
     {
         return new Object[][]{
             { createService(new JdbcMaintenanceWindowDao(dataSource)) },
-            { createService(new InfinispanMaintenanceWindowDao(cache)) }
+            { createService(new InfinispanMaintenanceWindowDao(cacheManager)) }
         };
     }
 

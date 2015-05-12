@@ -2,6 +2,7 @@ package org.ccci.maintenance.util;
 
 import org.ccci.maintenance.MaintenanceWindow;
 import org.infinispan.Cache;
+import org.infinispan.manager.CacheContainer;
 import org.joda.time.DateTime;
 
 import java.util.Map;
@@ -16,9 +17,10 @@ public class InfinispanMaintenanceWindowDao implements MaintenanceWindowDao
 
     //using Object instead of Cache here to allow caller to avoid a hard dependency upon infinispan
     @SuppressWarnings("unchecked")
-    public InfinispanMaintenanceWindowDao(Object cache)
+    public InfinispanMaintenanceWindowDao(Object containerAsObject)
     {
-        this.cache = (Cache<String, OwnedMaintenanceWindow>) cache;
+        CacheContainer cacheContainer = (CacheContainer) containerAsObject;
+        cache = cacheContainer.getCache();
     }
 
     public MaintenanceWindow getActiveMaintenanceWindow(

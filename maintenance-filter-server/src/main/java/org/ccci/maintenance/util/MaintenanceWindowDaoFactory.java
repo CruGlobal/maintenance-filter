@@ -16,7 +16,7 @@ public class MaintenanceWindowDaoFactory
     private final ConfigReader configReader;
     private DatasourceManager datasourceManager;
     private DataSource dataSource;
-    private Object cache;
+    private Object cacheContainer;
 
     public MaintenanceWindowDaoFactory(
         ConfigReader configReader,
@@ -37,23 +37,21 @@ public class MaintenanceWindowDaoFactory
         else
         {
             //avoid a hard dependency on infinispan, by not using Cache.class
-            Class<?> cacheClass = getInfinispanCacheClass();
-            cache = Lookups.doLookup(location, cacheClass);
+            Class<?> cacheContainerClass = getInfinispanCacheContainerClass();
+            cacheContainer = Lookups.doLookup(location, cacheContainerClass);
         }
     }
 
-    private Class<?> getInfinispanCacheClass()
+    private Class<?> getInfinispanCacheContainerClass()
     {
-        Class<?> cacheClass;
         try
         {
-            cacheClass = Class.forName("org.infinispan.Cache");
+            return Class.forName("org.infinispan.manager.CacheContainer");
         }
         catch (ClassNotFoundException e)
         {
             throw Exceptions.wrap(e);
         }
-        return cacheClass;
     }
 
     private void initDatabaseIfNecessary(DataSource dataSource)
@@ -75,7 +73,7 @@ public class MaintenanceWindowDaoFactory
         }
         else
         {
-            return new InfinispanMaintenanceWindowDao(cache);
+            return new InfinispanMaintenanceWindowDao(cacheContainer);
         }
     }
 }
