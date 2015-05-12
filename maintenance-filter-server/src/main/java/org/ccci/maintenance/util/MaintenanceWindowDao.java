@@ -9,6 +9,8 @@ import org.joda.time.DateTime;
 public interface MaintenanceWindowDao
 {
     MaintenanceWindow getActiveMaintenanceWindow(String filterName, DateTime currentDateTime);
+
+    /** retrieves the window identified by the given id, or null if it does not exist */
     OwnedMaintenanceWindow getMaintenanceWindowById(String id);
 
     void createMaintenanceWindow(OwnedMaintenanceWindow window);
