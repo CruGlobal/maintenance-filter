@@ -2,6 +2,7 @@ package org.ccci.maintenance;
 
 import org.ccci.maintenance.util.Clock;
 import org.ccci.maintenance.util.ConfigReader;
+import org.ccci.maintenance.util.JdbcMaintenanceWindowDao;
 
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
@@ -52,7 +53,10 @@ public class Bootstrap
             servletContext.setAttribute(bootstrapLocation, this);
 
             String key = getKey();
-            maintenanceService = new MaintenanceServiceImpl(Clock.system(), dataSource, key);
+            maintenanceService = new MaintenanceServiceImpl(
+                Clock.system(),
+                new JdbcMaintenanceWindowDao(dataSource),
+                key);
             servletContext.setAttribute(getMaintenanceServiceLocation(), maintenanceService);
         }
         else

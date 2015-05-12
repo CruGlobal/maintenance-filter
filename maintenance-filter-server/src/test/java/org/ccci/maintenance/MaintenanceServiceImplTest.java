@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.ccci.maintenance.util.Clock;
+import org.ccci.maintenance.util.JdbcMaintenanceWindowDao;
 import org.h2.jdbcx.JdbcDataSource;
 import org.joda.time.DateTime;
 import org.mockito.Mock;
@@ -47,7 +48,7 @@ public class MaintenanceServiceImplTest
     @BeforeMethod
     public void setupService() throws SQLException
     {
-        service = new MaintenanceServiceImpl(clock, dataSource, "secrets");
+        service = new MaintenanceServiceImpl(clock, new JdbcMaintenanceWindowDao(dataSource), "secrets");
         service.addFilterName(null);
         service.addFilterName("special");
         service.initializationComplete();
