@@ -64,12 +64,12 @@ public class MaintenanceServiceImpl implements MaintenanceService
 
     private void checkIdNotInUseByAnotherFilter(OwnedMaintenanceWindow existing, String id, String targetFilterName)
     {
-        String otherfilterName = existing.owner;
+        String otherFilterName = existing.owner;
         Preconditions.checkArgument(
-            Objects.equal(otherfilterName, targetFilterName),
+            Objects.equal(otherFilterName, targetFilterName),
             "the '%s' maintenance window is owned by %s, not by %s",
             id,
-            getFilterDescription(otherfilterName),
+            getFilterDescription(otherFilterName),
             getFilterDescription(targetFilterName));
     }
 
