@@ -5,7 +5,9 @@ import javax.validation.constraints.Size;
 
 import org.joda.time.DateTime;
 
-public class MaintenanceWindow
+import java.io.Serializable;
+
+public class MaintenanceWindow implements Serializable
 {
     @Size(max = 50)
     @NotNull
@@ -90,5 +92,8 @@ public class MaintenanceWindow
     {
         this.longMessage = longMessage;
     }
+
+
+    private static final long serialVersionUID = 1L;
 
 }

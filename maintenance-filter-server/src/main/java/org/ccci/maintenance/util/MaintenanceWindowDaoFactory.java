@@ -11,9 +11,12 @@ import javax.sql.DataSource;
 public class MaintenanceWindowDaoFactory
 {
 
+    String infinispanLocationParamName = "org.ccci.maintenance.window.infinispan.cache.location";
+
     private final ConfigReader configReader;
     private DatasourceManager datasourceManager;
     private DataSource dataSource;
+    private Object cache;
 
     public MaintenanceWindowDaoFactory(
         ConfigReader configReader,
@@ -25,8 +28,32 @@ public class MaintenanceWindowDaoFactory
 
     public void initialize()
     {
-        dataSource = datasourceManager.lookupOrCreateDataSource();
-        initDatabaseIfNecessary(dataSource);
+        String location = configReader.getParameter(infinispanLocationParamName);
+        if (location == null)
+        {
+            dataSource = datasourceManager.lookupOrCreateDataSource();
+            initDatabaseIfNecessary(dataSource);
+        }
+        else
+        {
+            //avoid a hard dependency on infinispan, by not using Cache.class
+            Class<?> cacheClass = getInfinispanCacheClass();
+            cache = Lookups.doLookup(location, cacheClass);
+        }
+    }
+
+    private Class<?> getInfinispanCacheClass()
+    {
+        Class<?> cacheClass;
+        try
+        {
+            cacheClass = Class.forName("org.infinispan.Cache");
+        }
+        catch (ClassNotFoundException e)
+        {
+            throw Exceptions.wrap(e);
+        }
+        return cacheClass;
     }
 
     private void initDatabaseIfNecessary(DataSource dataSource)
@@ -42,6 +69,13 @@ public class MaintenanceWindowDaoFactory
 
     public MaintenanceWindowDao createDao()
     {
-        return new JdbcMaintenanceWindowDao(dataSource);
+        if (dataSource != null)
+        {
+            return new JdbcMaintenanceWindowDao(dataSource);
+        }
+        else
+        {
+            return new InfinispanMaintenanceWindowDao(cache);
+        }
     }
 }

@@ -2,6 +2,7 @@ package org.ccci.maintenance;
 
 import org.ccci.maintenance.util.ConfigReader;
 import org.ccci.maintenance.util.Exceptions;
+import org.ccci.maintenance.util.Lookups;
 
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
@@ -34,7 +35,7 @@ public class DatasourceManager {
         String datasourceLocation = configReader.getParameter(datasourceParamName);
         if (datasourceLocation != null)
         {
-            return lookupDataSource(datasourceLocation);
+            return Lookups.doLookup(datasourceLocation, DataSource.class);
         }
         else
         {
@@ -125,34 +126,6 @@ public class DatasourceManager {
         catch (IOException e)
         {
             Exceptions.swallow(e, "exception closing config stream");
-        }
-    }
-
-    private DataSource lookupDataSource(String datasourceLocation)
-    {
-        try
-        {
-            Object found = new InitialContext().lookup(datasourceLocation);
-            if (found == null)
-            {
-                throw new IllegalStateException("No datasource bound at " + datasourceLocation);
-            }
-            if (!(found instanceof DataSource))
-            {
-                throw new IllegalStateException(String.format(
-                    "Found %s bound at %s instead of a DataSource",
-                    found,
-                    datasourceLocation));
-            }
-            return (DataSource) found;
-        }
-        catch (NameNotFoundException e)
-        {
-            throw new IllegalStateException("No datasource bound at " + datasourceLocation, e);
-        }
-        catch (NamingException e)
-        {
-            throw Exceptions.wrap(e);
         }
     }
 

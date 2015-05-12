@@ -108,4 +108,10 @@ public class MaintenanceServiceImpl implements MaintenanceService
         //If/when I depend on guava, use ImmutableSet instead
         filterNames = Collections.unmodifiableSet(filterNames);
     }
+
+    @Override
+    public String toString()
+    {
+        return "MaintenanceServiceImpl[dao=" + dao.getClass().getSimpleName() +"]";
+    }
 }

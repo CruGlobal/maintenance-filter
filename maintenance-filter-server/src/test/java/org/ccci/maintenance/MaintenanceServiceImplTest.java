@@ -12,59 +12,84 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.ccci.maintenance.util.Clock;
+import org.ccci.maintenance.util.InfinispanMaintenanceWindowDao;
 import org.ccci.maintenance.util.JdbcMaintenanceWindowDao;
+import org.ccci.maintenance.util.MaintenanceWindowDao;
+import org.ccci.maintenance.util.OwnedMaintenanceWindow;
 import org.h2.jdbcx.JdbcDataSource;
+import org.infinispan.Cache;
+import org.infinispan.manager.DefaultCacheManager;
 import org.joda.time.DateTime;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 
 public class MaintenanceServiceImplTest
 {
 
-    MaintenanceServiceImpl service;
-
     DataSource dataSource;
+
+    Cache<String, OwnedMaintenanceWindow> cache;
 
     @Mock
     Clock clock;
-    
+
     @BeforeClass
     public void setupDb()
     {
         MockitoAnnotations.initMocks(this);
-        
+
         JdbcDataSource ds = new JdbcDataSource();
         ds.setURL("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
         ds.setUser("sa");
         dataSource = ds;
-        
+
         new DatabaseMigrator(dataSource).migrate();
+
+        cache = new DefaultCacheManager().getCache();
     }
-    
+
     @BeforeMethod
     public void setupService() throws SQLException
     {
-        service = new MaintenanceServiceImpl(clock, new JdbcMaintenanceWindowDao(dataSource), "secrets");
-        service.addFilterName(null);
-        service.addFilterName("special");
-        service.initializationComplete();
         clearTable();
+
+        cache.clear();
     }
-    
+
     private void clearTable() throws SQLException
     {
-        //test code is allowed to sloppily deal with exceptions & closing 
+        //test code is allowed to sloppily deal with exceptions & closing
         Connection connection = dataSource.getConnection();
         connection.createStatement().executeUpdate("delete from MaintenanceWindow");
         connection.close();
     }
 
-    @Test
-    public void testCreate()
+    private MaintenanceServiceImpl createService(MaintenanceWindowDao dao)
+    {
+        MaintenanceServiceImpl service = new MaintenanceServiceImpl(clock, dao, "secrets");
+        service.addFilterName(null);
+        service.addFilterName("special");
+        service.initializationComplete();
+        return service;
+    }
+
+
+    @DataProvider
+    public Object[][] services()
+    {
+        return new Object[][]{
+            { createService(new JdbcMaintenanceWindowDao(dataSource)) },
+            { createService(new InfinispanMaintenanceWindowDao(cache)) }
+        };
+    }
+
+    @Test(dataProvider = "services")
+    public void testCreate(MaintenanceServiceImpl service)
     {
         MaintenanceWindow window = new MaintenanceWindow();
         window.setId("test-outage");
@@ -84,8 +109,8 @@ public class MaintenanceServiceImplTest
         assertThat(service.getActiveMaintenanceWindow("special"), is(nullValue()));
     }
 
-    @Test
-    public void testCreateForNonDefaultFilter()
+    @Test(dataProvider = "services")
+    public void testCreateForNonDefaultFilter(MaintenanceServiceImpl service)
     {
         MaintenanceWindow window = new MaintenanceWindow();
         window.setId("test-outage");
@@ -105,8 +130,8 @@ public class MaintenanceServiceImplTest
         assertThat(service.getActiveMaintenanceWindow(null), is(nullValue()));
     }
 
-    @Test
-    public void testUpdate()
+    @Test(dataProvider = "services")
+    public void testUpdate(MaintenanceServiceImpl service)
     {
         MaintenanceWindow window = new MaintenanceWindow();
         window.setId("test-outage");
@@ -134,20 +159,20 @@ public class MaintenanceServiceImplTest
         assertThat(retrievedWindow, is(deeplyEqualTo(updatedWindow)));
     }
 
-    @Test
-    public void testInvalidAuthentication()
+    @Test(dataProvider = "services")
+    public void testInvalidAuthentication(MaintenanceServiceImpl service)
     {
         assertThat(service.isAuthenticated("pleaseletmein"), is(false));
     }
 
-    @Test
-    public void testInvalidAuthenticationWithClosePassword()
+    @Test(dataProvider = "services")
+    public void testInvalidAuthenticationWithClosePassword(MaintenanceServiceImpl service)
     {
         assertThat(service.isAuthenticated("secretz"), is(false));
     }
 
-    @Test
-    public void testValidAuthentication()
+    @Test(dataProvider = "services")
+    public void testValidAuthentication(MaintenanceServiceImpl service)
     {
         assertThat(service.isAuthenticated("secrets"), is(true));
     }
