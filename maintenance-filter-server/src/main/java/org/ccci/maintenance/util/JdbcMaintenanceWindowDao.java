@@ -46,14 +46,14 @@ public class JdbcMaintenanceWindowDao implements MaintenanceWindowDao
     }
 
     private MaintenanceWindow getCurrentWindowWithConnection(
-        Connection connnection,
+        Connection connection,
         String filterName,
         DateTime currentDateTime) throws SQLException
     {
         String sql = "select * from MaintenanceWindow where " +
                      "(beginAt < ? or beginAt is null) and " +
                      "(endAt > ? or endAt is null) " + buildFilterNameClause(filterName);
-        PreparedStatement statement = connnection.prepareStatement(sql);
+        PreparedStatement statement = connection.prepareStatement(sql);
         try
         {
             return getCurrentWindowWithStatement(statement, filterName, currentDateTime);
