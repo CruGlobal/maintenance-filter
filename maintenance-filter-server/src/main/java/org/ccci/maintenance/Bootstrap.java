@@ -30,7 +30,7 @@ public class Bootstrap
         }
         else
         {
-            throw new IllegalStateException("Boostrap has not yet been created");
+            throw new IllegalStateException("Bootstrap has not yet been created");
         }
     }
 
