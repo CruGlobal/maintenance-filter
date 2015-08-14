@@ -34,7 +34,19 @@ Edit the target app's WEB-INF/web.xml file, and add configuration similar to the
     -->
   </context-param>
 
-  <!-- you need to set a shared secret to authenticate the maintenance-filter-controller client -->  
+  <!--
+    or, as a third alternative,
+    if you want to use an Infinispan cache to store the maintenance window data,
+    this parameter indicates where in JNDI the CacheContainer can be located.
+  -->
+  <context-param>
+    <param-name>org.ccci.maintenance.window.infinispan.cache.location</param-name>
+    <param-value>java:jboss/infinispan/container/maintenance-filter-windows</param-value>
+    <!-- or whatever jndi location you'd like -->
+  </context-param>
+
+
+  <!-- you need to set a shared secret to authenticate the maintenance-filter-controller client -->
   <context-param>
     <param-name>org.ccci.maintenance.window.key</param-name>
     <param-value>7xs2v4pjdve3rfx</param-value>
