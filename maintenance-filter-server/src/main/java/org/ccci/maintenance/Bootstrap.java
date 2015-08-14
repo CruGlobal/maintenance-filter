@@ -2,6 +2,8 @@ package org.ccci.maintenance;
 
 import org.ccci.maintenance.util.Clock;
 import org.ccci.maintenance.util.ConfigReader;
+import org.ccci.maintenance.util.JdbcMaintenanceWindowDao;
+import org.ccci.maintenance.util.MaintenanceWindowDaoFactory;
 
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
@@ -11,13 +13,15 @@ public class Bootstrap
 
     private final ServletContext servletContext;
     private final ConfigReader configReader;
-    private DatasourceManager datasourceManager;
+    private MaintenanceWindowDaoFactory daoFactory;
 
     public Bootstrap(ServletContext servletContext)
     {
         this.servletContext = servletContext;
         this.configReader = new ConfigReader(servletContext, System.getProperties());
-        this.datasourceManager = new DatasourceManager(configReader);
+        this.daoFactory = new MaintenanceWindowDaoFactory(
+            configReader,
+            new DatasourceManager(configReader));
     }
 
     public static Bootstrap getInstance(ServletContext servletContext)
@@ -30,7 +34,7 @@ public class Bootstrap
         }
         else
         {
-            throw new IllegalStateException("Boostrap has not yet been created");
+            throw new IllegalStateException("Bootstrap has not yet been created");
         }
     }
 
@@ -40,25 +44,34 @@ public class Bootstrap
         maintenanceService.addFilterName(filterName);
     }
 
-    private MaintenanceServiceImpl getOrCreateMaintenanceService()
+    private synchronized MaintenanceServiceImpl getOrCreateMaintenanceService()
     {
         String bootstrapLocation = Bootstrap.class.getName();
         Bootstrap bootstrap = (Bootstrap) servletContext.getAttribute(bootstrapLocation);
         MaintenanceServiceImpl maintenanceService;
         if (bootstrap == null)
         {
-            DataSource dataSource = datasourceManager.lookupOrCreateDataSource();
-            initDatabaseIfNecessary(dataSource);
-            servletContext.setAttribute(bootstrapLocation, this);
-
-            String key = getKey();
-            maintenanceService = new MaintenanceServiceImpl(Clock.system(), dataSource, key);
-            servletContext.setAttribute(getMaintenanceServiceLocation(), maintenanceService);
+            maintenanceService = storeThisBootstrapAndCreateMaintenanceService(bootstrapLocation);
         }
         else
         {
             maintenanceService = getMaintenanceServiceImpl();
         }
+        return maintenanceService;
+    }
+
+    private MaintenanceServiceImpl storeThisBootstrapAndCreateMaintenanceService(String
+        bootstrapLocation)
+    {
+        daoFactory.initialize();
+        servletContext.setAttribute(bootstrapLocation, this);
+
+        String key = getKey();
+        MaintenanceServiceImpl maintenanceService = new MaintenanceServiceImpl(
+            Clock.system(),
+            daoFactory.createDao(),
+            key);
+        servletContext.setAttribute(getMaintenanceServiceLocation(), maintenanceService);
         return maintenanceService;
     }
 
@@ -79,12 +92,7 @@ public class Bootstrap
     /** may be called multiple times, if multiple filters are configured */
     public void shutdown()
     {
-        datasourceManager.shutdownPoolIfNecessary();
-    }
-
-    private void initDatabaseIfNecessary(DataSource dataSource)
-    {
-        new DatabaseMigrator(dataSource).migrate();
+        daoFactory.shutdown();
     }
 
     public MaintenanceService getMaintenanceService()
