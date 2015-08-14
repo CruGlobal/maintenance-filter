@@ -37,7 +37,7 @@ public class MaintenanceWindowDaoFactory
         }
         else
         {
-            //avoid a hard dependency on infinispan, by not using Cache.class
+            //avoid a hard dependency on infinispan, by not using CacheContainer.class
             Class<?> cacheContainerClass = getInfinispanCacheContainerClass();
             cacheContainer = Lookups.doLookup(location, cacheContainerClass);
         }
