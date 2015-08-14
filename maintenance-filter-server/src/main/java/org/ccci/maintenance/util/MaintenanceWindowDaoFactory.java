@@ -11,7 +11,8 @@ import javax.sql.DataSource;
 public class MaintenanceWindowDaoFactory
 {
 
-    String infinispanLocationParamName = "org.ccci.maintenance.window.infinispan.cache.location";
+    private static final String INFINISPAN_LOCATION_PARAM_NAME =
+        "org.ccci.maintenance.window.infinispan.cache.location";
 
     private final ConfigReader configReader;
     private DatasourceManager datasourceManager;
@@ -28,7 +29,7 @@ public class MaintenanceWindowDaoFactory
 
     public void initialize()
     {
-        String location = configReader.getParameter(infinispanLocationParamName);
+        String location = configReader.getParameter(INFINISPAN_LOCATION_PARAM_NAME);
         if (location == null)
         {
             dataSource = datasourceManager.lookupOrCreateDataSource();
