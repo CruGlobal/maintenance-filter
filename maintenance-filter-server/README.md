@@ -3,7 +3,7 @@ Installation instructions
 
 
 copy jars into target app's WEB-INF/lib folder:
-* h2-1.2.142.jar
+* h2-1.2.142.jar (only if you are using org.ccci.maintenance.window.db.path below)
 * joda-time-1.6.jar
 * log4j-1.2.14.jar
 * maintenance-filter-api-1-SNAPSHOT.jar
