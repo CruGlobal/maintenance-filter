@@ -3,7 +3,6 @@ Installation instructions
 
 
 copy jars into target app's WEB-INF/lib folder:
-* guava-r07.jar
 * h2-1.2.142.jar
 * joda-time-1.6.jar
 * log4j-1.2.14.jar
