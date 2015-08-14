@@ -9,7 +9,8 @@ copy jars into target app's WEB-INF/lib folder:
 * maintenance-filter-api-1-SNAPSHOT.jar
 * maintenance-filter-server-1-SNAPSHOT.jar
 
-(Note that versions are correct as of this writing, but may not be correct by the time you read this.)
+(Note that versions are correct as of this writing,
+but may not be correct by the time you read this.)
 
 Edit the target app's WEB-INF/web.xml file, and add configuration similar to the following:
  ```xml
@@ -61,7 +62,8 @@ Edit the target app's WEB-INF/web.xml file, and add configuration similar to the
       For example, here, any url starting with /ignored/ and
       any url ending with .jpg should not be blocked.
       These are regular expressions, not normal web.xml url mapping expressions.
-      Note that the control servlet's url does not need to be listed here; it will be bypassed automatically.
+      Note that the control servlet's url does not need to be listed here;
+      it will be bypassed automatically.
     -->
     <init-param>
       <param-name>bypassUrlPatterns</param-name>
@@ -82,11 +84,13 @@ Edit the target app's WEB-INF/web.xml file, and add configuration similar to the
 Usage on Tomcat
 ---------------
 
-If you configure the maintenance filter to set up its own maintenance database (eg by using
-`org.ccci.maintenance.window.db.path`), then be aware that you may see these log lines when you shut down tomcat:
+If you configure the maintenance filter to set up its own maintenance database
+(eg by using `org.ccci.maintenance.window.db.path`),
+then be aware that you may see these log lines when you shut down tomcat:
 ```
 SEVERE: The web application [/myapp] appears to have started a thread named [H2 Log Writer MAINTENANCE_FILTER] but has failed to stop it. This is very likely to create a memory leak.
 ```
-I believe this is due to the fact that H2 shuts down somewhat asynchronously, and its shutdown thread isn't finished by
-the time Tomcat checks for un-cleaned-up threads.  I am not sure if this causes a webapp-classloader leak or not, but I
-don't think it does.
+I believe this is due to the fact that H2 shuts down somewhat asynchronously,
+and its shutdown thread isn't finished by the time Tomcat checks for un-cleaned-up threads.
+I am not sure if this causes a webapp-classloader leak or not,
+but I don't think it does.
