@@ -1,13 +1,5 @@
 package org.ccci.maintenance;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -20,7 +12,20 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.PeriodFormat;
+import org.joda.time.format.PeriodFormatter;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MaintenanceControlClient
 {
@@ -86,7 +91,52 @@ public class MaintenanceControlClient
             }
             log.info("successfully updated window on " + server);
         }
+        if (failures.isEmpty())
+        {
+            printConfirmationOfWindowBoundaries(window);
+        }
         return failures;
+    }
+
+    /** this helps the user verify that he got the timestamps correct in his config file*/
+    private void printConfirmationOfWindowBoundaries(MaintenanceWindow window)
+    {
+        DateTime now = new DateTime();
+        String beginPhrase = getRelativeTimePhrase(
+            now,
+            window.getBeginAt(),
+            "began",
+            "will begin");
+        String endPhrase = getRelativeTimePhrase(
+            now,
+            window.getEndAt(),
+            "ended",
+            "will end");
+
+        log.info("window " + beginPhrase + " and " + endPhrase);
+    }
+
+    private String getRelativeTimePhrase(
+        DateTime now,
+        DateTime begin,
+        String pastVerb,
+        String futureVerb)
+    {
+        PeriodType type = PeriodType.standard().withMillisRemoved();
+        Period period;
+        String verb;
+        if (now.isBefore(begin))
+        {
+            period = new Period(now, begin, type);
+            verb = futureVerb + " in %s";
+        }
+        else
+        {
+            period = new Period(begin, now, type);
+            verb = pastVerb + " %s ago";
+        }
+        PeriodFormatter periodFormatter = PeriodFormat.getDefault();
+        return String.format(verb, periodFormatter.print(period));
     }
 
     private void handleFailure(URI server, 
