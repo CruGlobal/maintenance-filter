@@ -33,7 +33,13 @@ Usage
 =====
 see [maintenance-filter-server's readme](/maintenance-filter-server/README.md) for server-side configuration.
 
-TODO: client-side instructions (but see an example config file [here](/maintenance-filter-controller/src/test/resources/maintenanceWindowUpdate.yml))
+Client-Side
+1) Build the project using Maven
+2) Create a config file (see an example config file [here](/maintenance-filter-controller/src/test/resources/maintenanceWindowUpdate.yml))
+3) From the command line, run the maintenance-filter-controller jar (in the target directory) with the config file path as a parameter:
+````
+java -jar maintenance-filter-controller-1-SNAPSHOT.jar --configurationFile configurationFilePath
+````
 
 
 License
