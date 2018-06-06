@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
-  <parent>
-    <artifactId>ccci-root</artifactId>
-    <groupId>org.ccci</groupId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-  
+
+  <groupId>org.ccci</groupId>
   <artifactId>maintenance-filter</artifactId>
   <packaging>pom</packaging>
   <name>Maintenance Filter</name>
@@ -21,7 +16,30 @@
   	<module>maintenance-filter-api</module>
     <module>maintenance-filter-test-webapp</module>
   </modules>
-  
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/CruGlobal/maintenance-filter/issues</url>
+  </issueManagement>
+
+  <scm>
+    <developerConnection>scm:git:https://github.com/CruGlobal/maintenance-filter.git</developerConnection>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <name>Cru Private Releases</name>
+      <url>https://cruglobal.jfrog.io/cruglobal/list/maven-cru-private-releases-local/</url>
+      <id>cruglobal.jfrog.io</id>
+    </repository>
+
+    <snapshotRepository>
+      <name>Cru Private Snapshots</name>
+      <url>https://cruglobal.jfrog.io/cruglobal/list/maven-cru-private-snapshots-local/</url>
+      <id>cruglobal.jfrog.io</id>
+    </snapshotRepository>
+  </distributionManagement>
+
   <dependencyManagement>
     <dependencies>
       
