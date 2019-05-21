@@ -8,7 +8,6 @@
   </parent>
   <artifactId>maintenance-filter-test-webapp</artifactId>
   <packaging>war</packaging>
-  <version>1-SNAPSHOT</version>
   <name>maintenance-filter-test-webapp JEE5 Webapp</name>
 
   <dependencies>
@@ -31,7 +30,7 @@
     <dependency>
       <groupId>org.ccci</groupId>
       <artifactId>maintenance-filter-server</artifactId>
-      <version>1-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     
     <dependency>

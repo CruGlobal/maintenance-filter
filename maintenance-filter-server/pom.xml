@@ -6,8 +6,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>maintenance-filter-server</artifactId>
-  <version>1-SNAPSHOT</version>
-  
+
   <dependencies>
     <!--  provided by servlet container, or else not needed at runtime -->
     <dependency>
@@ -110,7 +109,7 @@
     <dependency>
     	<groupId>org.ccci</groupId>
     	<artifactId>maintenance-filter-api</artifactId>
-    	<version>1-SNAPSHOT</version>
+    	<version>${project.version}</version>
     </dependency>
     
     

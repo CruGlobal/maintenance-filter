@@ -6,8 +6,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>maintenance-filter-controller</artifactId>
-  <version>1-SNAPSHOT</version>
-  
+
   <dependencies>
   
     <dependency>
@@ -31,7 +30,7 @@
     <dependency>
     	<groupId>org.ccci</groupId>
     	<artifactId>maintenance-filter-api</artifactId>
-    	<version>1-SNAPSHOT</version>
+    	<version>${project.version}</version>
     </dependency>
     
     <dependency>
