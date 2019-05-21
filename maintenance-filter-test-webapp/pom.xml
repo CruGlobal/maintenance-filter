@@ -4,7 +4,7 @@
   <parent>
     <artifactId>maintenance-filter</artifactId>
     <groupId>org.ccci</groupId>
-    <version>1-SNAPSHOT</version>
+    <version>1</version>
   </parent>
   <artifactId>maintenance-filter-test-webapp</artifactId>
   <packaging>war</packaging>
