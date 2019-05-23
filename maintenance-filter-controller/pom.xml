@@ -2,18 +2,17 @@
   <parent>
     <artifactId>maintenance-filter</artifactId>
     <groupId>org.ccci</groupId>
-    <version>1-SNAPSHOT</version>
+    <version>1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>maintenance-filter-controller</artifactId>
-  <version>1-SNAPSHOT</version>
-  
+
   <dependencies>
   
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.0</version>
+      <version>4.5.8</version>
     </dependency>
   
     <dependency>
@@ -31,7 +30,7 @@
     <dependency>
     	<groupId>org.ccci</groupId>
     	<artifactId>maintenance-filter-api</artifactId>
-    	<version>1-SNAPSHOT</version>
+    	<version>${project.version}</version>
     </dependency>
     
     <dependency>

@@ -6,7 +6,7 @@
   <artifactId>maintenance-filter</artifactId>
   <packaging>pom</packaging>
   <name>Maintenance Filter</name>
-  <version>1-SNAPSHOT</version>
+  <version>1</version>
   
   
   <description>Provides a utility to easily block access to a web application during a maintenance outage.  Users will see a configured message.</description>

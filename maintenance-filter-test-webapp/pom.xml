@@ -4,11 +4,10 @@
   <parent>
     <artifactId>maintenance-filter</artifactId>
     <groupId>org.ccci</groupId>
-    <version>1-SNAPSHOT</version>
+    <version>1</version>
   </parent>
   <artifactId>maintenance-filter-test-webapp</artifactId>
   <packaging>war</packaging>
-  <version>1-SNAPSHOT</version>
   <name>maintenance-filter-test-webapp JEE5 Webapp</name>
 
   <dependencies>
@@ -31,13 +30,19 @@
     <dependency>
       <groupId>org.ccci</groupId>
       <artifactId>maintenance-filter-server</artifactId>
-      <version>1-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.14</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.2.142</version>
     </dependency>
     
   </dependencies>
