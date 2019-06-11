@@ -38,7 +38,7 @@ Client-Side
 2) Create a config file (see an example config file [here](/maintenance-filter-controller/src/test/resources/maintenanceWindowUpdate.yml))
 3) From the command line, run the maintenance-filter-controller jar (in the target directory) with the config file path as a parameter:
 ````
-java -jar maintenance-filter-controller-1-SNAPSHOT.jar --configurationFile configurationFilePath
+java -jar maintenance-filter-controller-1.jar --configurationFile configurationFilePath
 ````
 
 
